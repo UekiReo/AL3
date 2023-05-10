@@ -4,11 +4,11 @@
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "Model.h"
+#include "Player.h"
 #include "SafeDelete.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -46,16 +46,12 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-
-	// 3Dモデル
 	Model* model_ = nullptr;
 
-	// ビュープロジェクション
+	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
-	//自キャラ
 	Player* player_ = nullptr;
 
 	/// <summary>

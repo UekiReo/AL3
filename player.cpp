@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "player.h"
 #include <cassert>
 
 void Player::Initialize(Model* model, uint32_t textureHandle) 

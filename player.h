@@ -2,8 +2,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
-class Player 
-{
+class Player {
 public:
 	void Initialize(Model* model, uint32_t textureHandle);
 

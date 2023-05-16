@@ -46,12 +46,24 @@ void Player::Update()
 	ImGui::Begin("Player");
 	ImGui::InputFloat3("InputFloat3",moves);
 	ImGui::SliderFloat3("SliderFloat3", moves, 0.0f, 2.0f);
-	ImGui::Text("DebugCamera SPACE", 2050, 12, 31);
+	ImGui::Text("DebugCamera ENTER", 2050, 12, 31);
 	ImGui::End();
 
 	move.x = moves[0]-1;
 	move.y = moves[1]-1;
 	move.z = moves[2]-1;
+
+	// 旋回処理
+	Rotate();
+
+	// 攻撃処理
+	Attack();
+
+	// 弾更新
+	if (bullet_) 
+	{
+		bullet_->Update();
+	}
 
 	// 移動制限
 	const float kMoveLimitX = 33;
@@ -67,7 +79,40 @@ void Player::Update()
 	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 }
 
+void Player::Rotate() 
+{
+	//回転の速さ[ラジアン/frame]
+	const float kRotSpeed = 0.02f;
+	// 押した方向でベクトルを変更
+	if (input_->PushKey(DIK_A))
+	{
+		worldTransform_.rotation_.y = kRotSpeed;
+	}
+	else if (input_->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y = kRotSpeed;
+	}
+}
+
+void Player::Attack() 
+{
+	if (input_->PushKey(DIK_SPACE)) 
+	{
+		// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		// 弾を登録
+		bullet_ = newBullet;
+	}
+}
+
 void Player::Draw(ViewProjection viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	// 弾描画
+	if (bullet_) 
+	{
+		bullet_->Draw(viewProjection);
+	}
 }

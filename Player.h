@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Input.h"
+#include "PlayerBullet.h"
 
 class Player 
 {
@@ -10,7 +11,13 @@ public:
 
 	void Update();
 
+	void Rotate();
+
+	void Attack();
+
 	void Draw(ViewProjection viewProjection);
+
+	
 
 private:
 	WorldTransform worldTransform_;
@@ -20,4 +27,6 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
+
+	PlayerBullet* bullet_ = nullptr;
 };

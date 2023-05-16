@@ -19,8 +19,6 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update() 
 { 
-	worldTransform_.TransferMatrix(); 
-
 	Vector3 move = {0, 0, 0};
 	
 	const float kCharacterSpeed = 0.2f;
@@ -53,6 +51,8 @@ void Player::Update()
 	move.y = moves[1]-1;
 	move.z = moves[2]-1;
 
+	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
+
 	// 旋回処理
 	Rotate();
 
@@ -77,19 +77,20 @@ void Player::Update()
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	worldTransform_.matWorld_ = MakeAffineMatrix(
 	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	worldTransform_.TransferMatrix();
 }
 
 void Player::Rotate() 
 {
-	//回転の速さ[ラジアン/frame]
+	// 回転の速さ[ラジアン/frame]
 	const float kRotSpeed = 0.02f;
 	// 押した方向でベクトルを変更
-	if (input_->PushKey(DIK_A))
+	if (input_->PushKey(DIK_A)) 
 	{
-		worldTransform_.rotation_.y = kRotSpeed;
-	}
-	else if (input_->PushKey(DIK_D)) {
-		worldTransform_.rotation_.y = kRotSpeed;
+		worldTransform_.rotation_.y += kRotSpeed;
+	} else if (input_->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y -= kRotSpeed;
 	}
 }
 

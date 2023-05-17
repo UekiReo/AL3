@@ -20,7 +20,24 @@ void Enemy::Update()
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 
-	move.z -= kCharacterSpeed;
+	// フェーズと移動
+	switch (phase_)
+	{ 
+	// 接近フェーズ
+	case Phase::Approach:
+	default:
+		move.z -= kCharacterSpeed;
+		if (worldTransform_.translation_.z < 0.0f) 
+		{
+			phase_ = Phase::Leave;
+		}
+		break;
+	// 離脱フェーズ
+	case Phase::Leave:
+		move.x -= kCharacterSpeed;
+		move.y += kCharacterSpeed;
+		break;
+	}
 
 	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
 

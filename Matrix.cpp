@@ -28,17 +28,6 @@ float Length(const Vector3& v) {
 	return result;
 }
 
-Vector3 Normalize(const Vector3& v) {
-	Vector3 result;
-	float a = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	if (a != 0) {
-		result.x = v.x / a;
-		result.y = v.y / a;
-		result.z = v.z / a;
-	}
-	return result;
-}
-
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] +

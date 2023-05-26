@@ -41,7 +41,7 @@ void Player::Update()
 
 	Vector3 move = {0, 0, 0};
 	
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.1f;
 
 	if (input_->PushKey(DIK_LEFT))
 	{

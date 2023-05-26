@@ -19,7 +19,7 @@ void Enemy::Initialize(Model* model)
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = {0, 0, 20};
+	worldTransform_.translation_ = {0, 5, 20};
 }
 
 void Enemy::Update() 

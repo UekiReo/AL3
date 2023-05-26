@@ -35,7 +35,7 @@ void GameScene::Initialize()
 	enemy_ = new Enemy();
 	// 敵キャラの初期化
 	Vector3 position = {0, 0, 20};
-	enemy_->Initialize(model_, position);
+	enemy_->Initialize(model_);
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(50, 50);

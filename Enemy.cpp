@@ -2,7 +2,11 @@
 #include "Matrix.h"
 #include <cassert>
 
-void Enemy::Initialize(Model* model, const Vector3& position) 
+Enemy::Enemy() {}
+
+Enemy::~Enemy() { delete phase_; }
+
+void Enemy::Initialize(Model* model) 
 {
 	assert(model);
 
@@ -10,40 +14,32 @@ void Enemy::Initialize(Model* model, const Vector3& position)
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("white1x1.png");
 
+	// フェーズ開始
+	phase_ = new EnemyApproach();
+
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = position;
+	worldTransform_.translation_ = {0, 0, 20};
 }
 
 void Enemy::Update() 
 {
-	Vector3 move = {0, 0, 0};
-	const float kCharacterSpeed = 0.2f;
-
-	// フェーズと移動
-	switch (phase_)
-	{ 
-	// 接近フェーズ
-	case Phase::Approach:
-	default:
-		move.z -= kCharacterSpeed;
-		if (worldTransform_.translation_.z < 0.0f) 
-		{
-			phase_ = Phase::Leave;
-		}
-		break;
-	// 離脱フェーズ
-	case Phase::Leave:
-		move.x -= kCharacterSpeed;
-		move.y += kCharacterSpeed;
-		break;
-	}
-
-	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
+	phase_->Update(this);
 
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 }
+
+void Enemy::ChangePhase(EnemyState* newState) 
+{
+	delete phase_;
+	phase_ = newState;
+}
+
+void Enemy::Move(Vector3 speed) 
+{ 
+	worldTransform_.translation_ += speed; 
+};
 
 void Enemy::Draw(const ViewProjection& viewProjection) 
 {

@@ -22,8 +22,6 @@ public:
 
 	void Draw(ViewProjection viewProjection);
 
-	
-
 private:
 	WorldTransform worldTransform_;
 

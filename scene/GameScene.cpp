@@ -34,8 +34,7 @@ void GameScene::Initialize()
 	// 敵キャラの生成
 	enemy_ = new Enemy();
 	// 敵キャラの初期化
-	Vector3 position = {0, 0, 20};
-	enemy_->Initialize(model_, position);
+	enemy_->Initialize(model_, textureHandle_);
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(50, 50);
@@ -52,7 +51,10 @@ void GameScene::Update()
 	player_->Update();
 
 	// 敵キャラの更新
-	enemy_->Update();
+	if (enemy_ != nullptr) 
+	{
+		enemy_->Update();
+	}
 
 	debugCamera_->Update();
 

@@ -73,14 +73,31 @@ void Enemy::Draw(ViewProjection viewProjection)
 
 void Enemy::Fire()
 {
+	assert(player_);
+
+	// 弾の速度
 	const float kBulletSpeed = -1.0f;
+
+	// 自キャラのワールド座標を取得
+
+
+	// 敵キャラのワールド座標を取得
+
+
+	// 敵キャラ－→自キャラの差分ベクトルを求める
+
+
+	// ベクトルの正規化
 	Vector3 velocity(0, 0, kBulletSpeed);
 
+	// ベクトルの長さを、早さに合わせる
 	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
+	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
+	// 弾を登録
 	bullets_.push_back(newBullet);
 }
 
@@ -116,4 +133,15 @@ void Enemy::LeavePhaseUpdate()
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	worldTransform_.matWorld_ = MakeAffineMatrix(
 	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+}
+
+Vector3 Enemy::GetWorldPosition() 
+{
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
 }

@@ -5,6 +5,8 @@
 #include "EnemyBullet.h"
 #include <List>
 
+class Player;
+
 class Enemy 
 {
 public:
@@ -24,13 +26,18 @@ public:
 
 	void LeavePhaseUpdate();
 
-	enum class Phase {
+	enum class Phase 
+	{
 		Start,
 		Approach,
 		Leave,
 	};
 
 	static const int kFireInterval = 60;
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetWorldPosition();
 
 private:
 	WorldTransform worldTransform_;
@@ -46,4 +53,6 @@ private:
 	std::list<EnemyBullet*> bullets_;
 
 	int32_t shotTimer_ = 0;
+
+	Player* player_ = nullptr;
 };

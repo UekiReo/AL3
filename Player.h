@@ -22,6 +22,8 @@ public:
 
 	void Draw(ViewProjection viewProjection);
 
+	Vector3 GetWorldPosition();
+
 private:
 	WorldTransform worldTransform_;
 

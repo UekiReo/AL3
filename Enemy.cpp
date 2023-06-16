@@ -5,8 +5,6 @@
 #include "TextureManager.h"
 #include <cassert>
 
-Enemy::Enemy() {}
-
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_)
 	{

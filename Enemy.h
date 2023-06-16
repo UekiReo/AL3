@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "Input.h"
 #include "EnemyBullet.h"
+#include "TimedCall.h"
 #include <List>
 
 class Enemy 
@@ -15,6 +16,11 @@ public:
 	void Update();
 
 	void Fire();
+
+	/// <summary>
+	/// 弾を発射し、タイマーをリセットする関数
+	/// </summary>
+	void FireAndReset();
 
 	void Draw(ViewProjection viewProjection);
 
@@ -44,6 +50,9 @@ private:
 	Phase phase_ = Phase::Start;
 
 	std::list<EnemyBullet*> bullets_;
+
+	// 時限発動のリスト
+	std::list<TimedCall*> timedCall_;
 
 	int32_t shotTimer_ = 0;
 };

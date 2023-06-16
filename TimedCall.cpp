@@ -1,12 +1,12 @@
-﻿#include "TimeCall.h"
+﻿#include "TimedCall.h"
 
-TimeCall::TimeCall(std::function<void()> callBack, uint32_t time) 
+TimedCall::TimedCall(std::function<void()> callBack, uint32_t time) 
 {
 	this->callBack_ = callBack;
 	this->time_ = time;
 }
 
-void TimeCall::Update() 
+void TimedCall::Update() 
 {
 	if (isFinish) 
 	{

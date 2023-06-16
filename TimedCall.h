@@ -6,11 +6,11 @@
 /// 時限発動
 /// </summary>
 
-class TimeCall
+class TimedCall
 {
 public:
 	// コンストラクタ
-	TimeCall(std::function<void()> callBack, uint32_t time);
+	TimedCall(std::function<void()> callBack, uint32_t time);
 
 	// 更新
 	void Update();

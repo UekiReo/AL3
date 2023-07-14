@@ -6,8 +6,6 @@ Enemy::Enemy() {}
 
 Enemy::~Enemy() 
 {
-	// delete phase_;
-
 	for (EnemyBullet* bullet : bullets_) 
 	{
 		delete bullet;
@@ -28,12 +26,9 @@ void Enemy::Initialize(Model* model)
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("black.png");
 
-	// フェーズ開始
-	// phase_ = new EnemyApproach();
-
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = {10, 0, 20};
+	worldTransform_.translation_ = {7.0f, 2.0f, 30.0f};
 
 	FireTimer_ = kFireInterval;
 	FireandReset();
@@ -52,12 +47,11 @@ void Enemy::Update()
 		return false;
 	});
 
-	// phase_->Update(this);
-
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall) 
 		{
-		if (timedcall->IsFinish()) {
+		if (timedcall->IsFinish())
+		{
 			delete timedcall;
 			return true;
 		}
@@ -71,7 +65,7 @@ void Enemy::Update()
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 
-	// 弾更新
+	// 弾の更新
 	for (EnemyBullet* bullet : bullets_)
 	{
 		bullet->Update();
@@ -84,7 +78,10 @@ void Enemy::ChangePhase(EnemyState* newState)
 	phase_ = newState;
 }
 
-void Enemy::Move(Vector3 speed) { worldTransform_.translation_ += speed; };
+void Enemy::Move(Vector3 speed) 
+{ 
+	worldTransform_.translation_ += speed;
+};
 
 void Enemy::Fire() 
 {
@@ -109,8 +106,9 @@ void Enemy::Draw(const ViewProjection& viewProjection)
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	// 弾描画
-	for (EnemyBullet* bullet : bullets_) {
+	// 弾の描画
+	for (EnemyBullet* bullet : bullets_) 
+	{
 		bullet->Draw(viewProjection);
 	}
 }

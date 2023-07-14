@@ -1,11 +1,11 @@
 #include "GameScene.h"
-#include "TextureManager.h"
 #include "AxisIndicator.h"
+#include "TextureManager.h"
 #include <cassert>
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() 
+GameScene::~GameScene()
 {
 	delete model_;
 	delete player_;
@@ -13,7 +13,7 @@ GameScene::~GameScene()
 	delete enemy_;
 }
 
-void GameScene::Initialize() 
+void GameScene::Initialize()
 {
 
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -26,6 +26,16 @@ void GameScene::Initialize()
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	input_ = Input::GetInstance();
+
+	// 軸方向表示の表示を有効化
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 参照するビュープロジェクションを指定
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
@@ -34,15 +44,8 @@ void GameScene::Initialize()
 	// 敵キャラの生成
 	enemy_ = new Enemy();
 	// 敵キャラの初期化
+	Vector3 position = {0, 0, 20};
 	enemy_->Initialize(model_);
-
-	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(50, 50);
-
-	// 軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() 
@@ -54,38 +57,36 @@ void GameScene::Update()
 	enemy_->Update();
 
 	debugCamera_->Update();
-
-	#ifdef _DEBUG
-
-	if (input_->TriggerKey(DIK_RETURN))
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_RETURN)) 
 	{
-		if (isDebugCameraActive_ == false) 
+		if (isDebugCameraActive_ == false)
 		{
 			isDebugCameraActive_ = true;
-		} else {
+		} 
+		else {
 			isDebugCameraActive_ = false;
 		}
 	}
-
-    #endif 
-
+#endif
 	// カメラの処理
-	if (isDebugCameraActive_)
+	if (isDebugCameraActive_) 
 	{
 		// デバッグカメラの更新
 		debugCamera_->Update();
-
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
-	} else {
+	} 
+	else {
 		// ビュープロジェクション行列の更新と転送
 		viewProjection_.UpdateMatrix();
 	}
 }
 
-void GameScene::Draw() {
+void GameScene::Draw() 
+{
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();

@@ -9,7 +9,8 @@
 
 class EnemyState;
 
-class Enemy {
+class Enemy 
+{
 public:
 	Enemy();
 

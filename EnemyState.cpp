@@ -12,6 +12,6 @@ void EnemyApproach::Update(Enemy* enemy)
 
 void EnemyLeave::Update(Enemy* enemy)
 {
-	// 移動
+	// 移動処理
 	enemy->Move(kCharacterLeaveSpeed);
 };

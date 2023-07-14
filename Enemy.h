@@ -1,58 +1,56 @@
-#pragma once
-#include "Model.h"
-#include "WorldTransform.h"
-#include "Input.h"
+ï»¿#pragma once
+#include "Matrix.h"
+#include "CMath.h"
 #include "EnemyBullet.h"
+#include "EnemyState.h"
+#include "Model.h"
 #include "TimedCall.h"
-#include <List>
+#include "WorldTransform.h"
 
-class Enemy 
-{
+class EnemyState;
+
+class Enemy {
 public:
+	Enemy();
+
 	~Enemy();
 
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model);
 
 	void Update();
+
+	void Draw(const ViewProjection& viewProjection);
+
+	void Move(Vector3 speed);
+
+	void ChangePhase(EnemyState* newState);
+
+	Vector3 GetTranslation() { return worldTransform_.translation_; };
 
 	void Fire();
 
 	/// <summary>
-	/// ’e‚ğ”­Ë‚µAƒ^ƒCƒ}[‚ğƒŠƒZƒbƒg‚·‚éŠÖ”
+	/// å¼¾ã‚’ç™ºå°„ã—ã€ã‚¿ã‚¤ãƒãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
 	/// </summary>
-	void FireAndReset();
+	void FireandReset();
 
-	void Draw(ViewProjection viewProjection);
-
-	void ApproachPhaseInitialize();
-
-	void ApproachPhaseUpdate();
-
-	void LeavePhaseUpdate();
-
-	enum class Phase {
-		Start,
-		Approach,
-		Leave,
-	};
-
+public:
 	static const int kFireInterval = 60;
+
+	int32_t FireTimer_ = 0;
+
+private:
+	// ãƒ¡ãƒ³ãƒé–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã®ãƒ†ãƒ¼ãƒ–ãƒ«
+	static void (Enemy::*phasetable_[])();
 
 private:
 	WorldTransform worldTransform_;
-
 	Model* model_ = nullptr;
-
 	uint32_t textureHandle_ = 0u;
-
-	Input* input_ = nullptr;
-
-	Phase phase_ = Phase::Start;
 
 	std::list<EnemyBullet*> bullets_;
 
-	// ŒÀ”­“®‚ÌƒŠƒXƒg
-	std::list<TimedCall*> timedCall_;
+	EnemyState* phase_ = nullptr;
 
-	int32_t shotTimer_ = 0;
+	std::list<TimedCall*> timedCalls_;
 };

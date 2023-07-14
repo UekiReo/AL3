@@ -20,7 +20,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& positon, const Vector3
 
 void EnemyBullet::Update() 
 {
-	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
+	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, velocity_);
 
 	if (--deathTimer_ <= 0)
 	{

@@ -34,7 +34,7 @@ void GameScene::Initialize()
 	// 敵キャラの生成
 	enemy_ = new Enemy();
 	// 敵キャラの初期化
-	enemy_->Initialize(model_, textureHandle_);
+	enemy_->Initialize(model_);
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(50, 50);
@@ -51,10 +51,7 @@ void GameScene::Update()
 	player_->Update();
 
 	// 敵キャラの更新
-	if (enemy_ != nullptr) 
-	{
-		enemy_->Update();
-	}
+	enemy_->Update();
 
 	debugCamera_->Update();
 
@@ -62,7 +59,12 @@ void GameScene::Update()
 
 	if (input_->TriggerKey(DIK_RETURN))
 	{
-		isDebugCameraActive_ = true;
+		if (isDebugCameraActive_ == false) 
+		{
+			isDebugCameraActive_ = true;
+		} else {
+			isDebugCameraActive_ = false;
+		}
 	}
 
     #endif 

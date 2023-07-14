@@ -16,7 +16,7 @@ public:
 	void Update();
 
 	// 完了ならtrueを返す
-	bool IsFinished() { return isFinish; }
+	bool IsFinish() { return isFinish; }
 
 private:
 	// コールバック

@@ -1,36 +1,48 @@
 ﻿#include "Enemy.h"
-#include "ImGuiManager.h"
 #include "Matrix.h"
-#include "PrimitiveDrawer.h"
-#include "TextureManager.h"
 #include <cassert>
 
-Enemy::~Enemy()
+Enemy::Enemy() {}
+
+Enemy::~Enemy() 
 {
-	for (EnemyBullet* bullet : bullets_)
+	// delete phase_;
+
+	for (EnemyBullet* bullet : bullets_) 
 	{
 		delete bullet;
 	}
+
+	for (TimedCall* timedCall : timedCalls_) 
+	{
+		delete timedCall;
+	}
 }
 
-void Enemy::Initialize(Model* model, uint32_t textureHandle) 
+void Enemy::Initialize(Model* model) 
 {
 	assert(model);
 
 	model_ = model;
-	textureHandle_ = textureHandle;
+
+	// テクスチャ読み込み
+	textureHandle_ = TextureManager::Load("black.png");
+
+	// フェーズ開始
+	// phase_ = new EnemyApproach();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_.x = 7.0f;
-	worldTransform_.translation_.y = 2.0f;
-	worldTransform_.translation_.z = 30.0f;
 
-	ApproachPhaseInitialize();
+	worldTransform_.translation_ = {10, 0, 20};
+
+	FireTimer_ = kFireInterval;
+	FireandReset();
 }
 
-void Enemy::Update()
+void Enemy::Update() 
 {
-	bullets_.remove_if([](EnemyBullet* bullet)
+	// デスフラグの立った弾の削除
+	bullets_.remove_if([](EnemyBullet* bullet) 
 		{
 		if (bullet->IsDead())
 		{
@@ -40,80 +52,74 @@ void Enemy::Update()
 		return false;
 	});
 
-	worldTransform_.TransferMatrix();
+	// phase_->Update(this);
 
-	Vector3 move = {0, 0, 0};
-
-	switch (phase_)
-	{
-	case Phase::Approach:
-	default:
-		ApproachPhaseUpdate();
-		for (EnemyBullet* bullet : bullets_) 
+	// タイマー
+	timedCalls_.remove_if([](TimedCall* timedcall) 
 		{
-			bullet->Update();
+		if (timedcall->IsFinish()) {
+			delete timedcall;
+			return true;
 		}
+		return false;
+	});
+	for (TimedCall* timedCall : timedCalls_)
+	{
+		timedCall->Update();
+	}
 
-		break;
+	// ワールドトランスフォームの更新
+	worldTransform_.UpdateMatrix();
 
-	case Phase::Leave:
-		LeavePhaseUpdate();
-		break;
+	// 弾更新
+	for (EnemyBullet* bullet : bullets_)
+	{
+		bullet->Update();
 	}
 }
 
-void Enemy::Draw(ViewProjection viewProjection) 
+void Enemy::ChangePhase(EnemyState* newState)
 {
+	delete phase_;
+	phase_ = newState;
+}
+
+void Enemy::Move(Vector3 speed) { worldTransform_.translation_ += speed; };
+
+void Enemy::Fire() 
+{
+	// 弾の速度
+	const float kBulletSpeed = -1.0f;
+
+	Vector3 velocity(0, 0, kBulletSpeed);
+
+	// 速度ベクトルを自機に合わせて回転させる
+	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+	// 弾を生成し初期化
+	EnemyBullet* newBullet = new EnemyBullet();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	// 弾を登録する
+	bullets_.push_back(newBullet);
+}
+
+void Enemy::Draw(const ViewProjection& viewProjection) 
+{
+	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
+	// 弾描画
 	for (EnemyBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
 }
 
-void Enemy::Fire()
+void Enemy::FireandReset() 
 {
-	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+	// 攻撃処理
+	Fire();
 
-	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
-	EnemyBullet* newBullet = new EnemyBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
-
-	bullets_.push_back(newBullet);
-}
-
-void Enemy::ApproachPhaseInitialize() { shotTimer_ = 0; }
-
-void Enemy::ApproachPhaseUpdate() 
-{
-	const float kApproachEnemySpeed = 0.2f;
-	Vector3 move = {0, 0, 0};
-
-	move.z -= kApproachEnemySpeed;
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	shotTimer_--;
-
-	if (shotTimer_ < 0) 
-	{
-		Fire();
-
-		shotTimer_ = kFireInterval;
-	}
-}
-
-void Enemy::LeavePhaseUpdate() 
-{
-	const float kLeaveEnemyLPSpeed = 0.3f;
-	Vector3 move = {0, 0, 0};
-
-	move.x -= kLeaveEnemyLPSpeed;
-	move.y += kLeaveEnemyLPSpeed;
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	// タイマー
+	timedCalls_.push_back(new TimedCall(std::bind(&Enemy::FireandReset, this), kFireInterval));
 }

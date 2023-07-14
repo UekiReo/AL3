@@ -8,13 +8,13 @@
 // Vector3同士の足し算
 Vector3 VectorAdd(const Vector3& translation, const Vector3& move);
 
-// 1 X軸回転行列
+// X軸回転行列
 Matrix4x4 MakeRotateXmatrix(float radian);
 
-// 2 Y軸回転行列
+// Y軸回転行列
 Matrix4x4 MakeRotateYmatrix(float radian);
 
-// 3 Z軸回転行列
+// Z軸回転行列
 Matrix4x4 MakeRotateZmatrix(float radian);
 
 // 平行移動

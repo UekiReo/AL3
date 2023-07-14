@@ -15,7 +15,6 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
-
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
@@ -56,7 +55,9 @@ void GameScene::Update()
 	// 敵キャラの更新
 	enemy_->Update();
 
+	// デバックカメラの更新
 	debugCamera_->Update();
+
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_RETURN)) 
 	{

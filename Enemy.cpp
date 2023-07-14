@@ -28,7 +28,7 @@ void Enemy::Initialize(Model* model)
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = {7.0f, 2.0f, 30.0f};
+	worldTransform_.translation_ = {10, 0, 20};
 
 	FireTimer_ = kFireInterval;
 	FireandReset();
@@ -39,7 +39,7 @@ void Enemy::Update()
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](EnemyBullet* bullet) 
 		{
-		if (bullet->IsDead())
+		if (bullet->IsDead()) 
 		{
 			delete bullet;
 			return true;
@@ -50,13 +50,15 @@ void Enemy::Update()
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall) 
 		{
-		if (timedcall->IsFinish())
+
+		if (timedcall->IsFinish()) 
 		{
 			delete timedcall;
 			return true;
 		}
 		return false;
 	});
+
 	for (TimedCall* timedCall : timedCalls_)
 	{
 		timedCall->Update();
@@ -65,21 +67,21 @@ void Enemy::Update()
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 
-	// 弾の更新
-	for (EnemyBullet* bullet : bullets_)
+	// 弾更新
+	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Update();
 	}
 }
 
-void Enemy::ChangePhase(EnemyState* newState)
+void Enemy::ChangePhase(EnemyState* newState) 
 {
 	delete phase_;
 	phase_ = newState;
 }
 
 void Enemy::Move(Vector3 speed) 
-{ 
+{
 	worldTransform_.translation_ += speed;
 };
 
@@ -106,7 +108,7 @@ void Enemy::Draw(const ViewProjection& viewProjection)
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	// 弾の描画
+	// 弾描画
 	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Draw(viewProjection);

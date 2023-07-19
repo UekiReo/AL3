@@ -2,6 +2,8 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
+class Player;
+
 class EnemyBullet
 {
 public:
@@ -10,6 +12,15 @@ public:
 	void Update();
 
 	void Draw(const ViewProjection& viewProjection);
+
+	bool IsDead() const { return isDead_; }
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	Vector3 GetWorldPosition();
 
 private:
 	WorldTransform worldTransform_;
@@ -24,6 +35,5 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
 
-public:
-	bool IsDead() const { return isDead_; }
+	Player* player_;
 };

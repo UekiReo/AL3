@@ -1,8 +1,8 @@
-#pragma once
-#include "Input.h"
+﻿#pragma once
 #include "Model.h"
-#include "PlayerBullet.h"
 #include "WorldTransform.h"
+#include "Input.h"
+#include "PlayerBullet.h"
 #include <list>
 
 class Player 
@@ -23,6 +23,11 @@ public:
 	void Attack();
 
 	Vector3 GetWorldPosition();
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 private:
 	WorldTransform worldTransform_;

@@ -3,6 +3,7 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+
 Player::Player() {}
 
 Player::~Player() 
@@ -13,7 +14,7 @@ Player::~Player()
 	}
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle) 
+void Player::Initialize(Model* model, uint32_t textureHandle)
 {
 	// NULLポインタチェック
 	assert(model);
@@ -31,7 +32,7 @@ void Player::Update()
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](PlayerBullet* bullet) 
 	{
-		if (bullet->IsDead()) 
+		if (bullet->IsDead())
 		{
 			delete bullet;
 			return true;
@@ -42,12 +43,12 @@ void Player::Update()
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 
-	if (input_->PushKey(DIK_LEFT)) 
+	if (input_->PushKey(DIK_LEFT))
 	{
 		move.x -= kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_RIGHT)) 
+	if (input_->PushKey(DIK_RIGHT))
 	{
 		move.x += kCharacterSpeed;
 	}
@@ -80,12 +81,10 @@ void Player::Update()
 	float inputFloat3[3] = {
 	    worldTransform_.translation_.x, worldTransform_.translation_.y,
 	    worldTransform_.translation_.z};
-
 	ImGui::Begin("Player");
-	ImGui::Text("DebugCamera Enter");
+	ImGui::Text("debugCamera = Enter");
 	ImGui::SliderFloat3("Player", inputFloat3, -40.0f, 40.0f);
 	ImGui::End();
-
 	worldTransform_.translation_.x = inputFloat3[0];
 	worldTransform_.translation_.y = inputFloat3[1];
 	worldTransform_.translation_.z = inputFloat3[2];
@@ -102,16 +101,17 @@ void Player::Update()
 	worldTransform_.UpdateMatrix();
 }
 
-void Player::Rotate()
+void Player::Rotate() 
 {
 	// 回転速さ
 	const float kRotSpeed = 0.02f;
 
 	// 推した方向で移動ベクトル変更
-	if (input_->PushKey(DIK_A)) 
+	if (input_->PushKey(DIK_A))
 	{
 		worldTransform_.rotation_.y += kRotSpeed;
-	} else if (input_->PushKey(DIK_D)) 
+
+	} else if (input_->PushKey(DIK_D))
 	{
 		worldTransform_.rotation_.y -= kRotSpeed;
 	}
@@ -137,7 +137,9 @@ void Player::Attack()
 	}
 }
 
-void Player::Draw(ViewProjection viewProjection) 
+void Player::OnCollision() {}
+
+void Player::Draw(ViewProjection viewProjection)
 {
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);

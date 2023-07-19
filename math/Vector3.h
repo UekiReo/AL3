@@ -9,7 +9,6 @@ struct Vector3 final {
 	float z;
 
 	// 算術演算子のオーバーロード
-
 	inline const Vector3 operator+(const Vector3& other) const {
 		Vector3 result;
 		result.x = x + other.x;

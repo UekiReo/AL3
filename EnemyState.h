@@ -3,7 +3,7 @@
 
 class Enemy;
 
-class EnemyState 
+class EnemyState
 {
 public:
 	virtual ~EnemyState(){};
@@ -11,7 +11,7 @@ public:
 	virtual void Update(Enemy* enemy) = 0;
 };
 
-class EnemyApproach : public EnemyState 
+class EnemyApproach : public EnemyState
 {
 public:
 	void Update(Enemy* enemy);

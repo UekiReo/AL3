@@ -1,7 +1,6 @@
 #include "CMath.h"
 
-Matrix4x4 MakeRotateXMatrix(float theta) 
-{
+Matrix4x4 MakeRotateXMatrix(float theta) {
 	Matrix4x4 result;
 	result.m[0][0] = 1;
 	result.m[0][1] = 0;
@@ -21,9 +20,7 @@ Matrix4x4 MakeRotateXMatrix(float theta)
 	result.m[3][3] = 1;
 	return result;
 }
-
-Matrix4x4 MakeRotateYMatrix(float theta) 
-{
+Matrix4x4 MakeRotateYMatrix(float theta) {
 	Matrix4x4 result;
 	result.m[0][0] = cosf(theta);
 	result.m[0][1] = 0;
@@ -43,9 +40,7 @@ Matrix4x4 MakeRotateYMatrix(float theta)
 	result.m[3][3] = 1;
 	return result;
 }
-
-Matrix4x4 MakeRotateZMatrix(float theta) 
-{
+Matrix4x4 MakeRotateZMatrix(float theta) {
 	Matrix4x4 result;
 	result.m[0][0] = cosf(theta);
 	result.m[0][1] = sinf(theta);
@@ -68,19 +63,16 @@ Matrix4x4 MakeRotateZMatrix(float theta)
 
 Vector3 Add(Vector3 a, Vector3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 
-Vector3 Subtract(const Vector3& v1, const Vector3& v2) 
-{
+Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
 	return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
 }
 
 float Dot(const Vector3& v1, const Vector3& v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 float Length(const Vector3& v) { return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z)); }
 
-Vector3 Normalise(const Vector3& v) 
-{
+Vector3 Normalise(const Vector3& v) {
 	float len = Length(v);
-	if (len != 0) 
-	{
+	if (len != 0) {
 		return {v.x / len, v.y / len, v.z / len};
 	}
 	return v;

@@ -9,7 +9,7 @@ Vector3 VectorAdd(const Vector3& translation, const Vector3& move) {
 	return result;
 }
 
-// X軸回転行列
+// 1 X軸回転行列
 Matrix4x4 MakeRotateXmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = 1.0f;
@@ -34,7 +34,7 @@ Matrix4x4 MakeRotateXmatrix(float radian) {
 	return result;
 }
 
-// Y軸回転行列
+// 2 Y軸回転行列
 Matrix4x4 MakeRotateYmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = std::cos(radian);
@@ -59,7 +59,7 @@ Matrix4x4 MakeRotateYmatrix(float radian) {
 	return result;
 }
 
-// Z軸回転行列
+// 3 Z軸回転行列
 Matrix4x4 MakeRotateZmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = std::cos(radian);

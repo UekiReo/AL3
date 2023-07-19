@@ -9,7 +9,7 @@
 
 class EnemyState;
 
-class Enemy 
+class Enemy
 {
 public:
 	Enemy();
@@ -30,6 +30,7 @@ public:
 
 	void Fire();
 
+	// 弾を発射しリセットする関数
 	void FireandReset();
 
 private:
@@ -45,6 +46,7 @@ private:
 
 	EnemyState* phase_ = nullptr;
 
+	// 時限発動のリスト
 	std::list<TimedCall*> timedCalls_;
 
 public:

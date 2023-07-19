@@ -38,7 +38,7 @@ void Enemy::Update()
 {
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](EnemyBullet* bullet) 
-		{
+	{
 		if (bullet->IsDead()) 
 		{
 			delete bullet;
@@ -49,8 +49,7 @@ void Enemy::Update()
 
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall) 
-		{
-
+	{
 		if (timedcall->IsFinish()) 
 		{
 			delete timedcall;
@@ -67,7 +66,7 @@ void Enemy::Update()
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 
-	// 弾更新
+	// 弾の更新
 	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Update();
@@ -108,8 +107,8 @@ void Enemy::Draw(const ViewProjection& viewProjection)
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	// 弾描画
-	for (EnemyBullet* bullet : bullets_) 
+	// 弾の描画
+	for (EnemyBullet* bullet : bullets_)
 	{
 		bullet->Draw(viewProjection);
 	}

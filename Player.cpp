@@ -1,21 +1,18 @@
 ﻿#include "Player.h"
 #include "Matrix.h"
-#include "TextureManager.h"
 #include "ImGuiManager.h"
-#include "PrimitiveDrawer.h"
 #include <cassert>
 
 Player::Player() {}
 
-Player::~Player() 
-{
-	for (PlayerBullet* bullet : bullets_) 
-	{
+Player::~Player() {
+	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
+	// NULLポインタチェック
 	assert(model);
 
 	model_ = model;
@@ -26,13 +23,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	input_ = Input::GetInstance();
 }
 
-void Player::Update() 
-{ 
+void Player::Update() {
 	// デスフラグの立った弾の削除
-	bullets_.remove_if([](PlayerBullet* bullet) 
-	{
-		if (bullet->IsDead()) 
-		{
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
 		}
@@ -40,36 +34,19 @@ void Player::Update()
 	});
 
 	Vector3 move = {0, 0, 0};
-	
 	const float kCharacterSpeed = 0.2f;
-
-	if (input_->PushKey(DIK_LEFT))
-	{
+	if (input_->PushKey(DIK_LEFT)) {
 		move.x -= kCharacterSpeed;
-	}else if (input_->PushKey(DIK_RIGHT)) 
-	{
+	}
+	if (input_->PushKey(DIK_RIGHT)) {
 		move.x += kCharacterSpeed;
 	}
-
-	if (input_->PushKey(DIK_DOWN)) 
-	{
-		move.y -= kCharacterSpeed;
-	} else if (input_->PushKey(DIK_UP)) 
-	{
+	if (input_->PushKey(DIK_UP)) {
 		move.y += kCharacterSpeed;
 	}
-	
-	float moves[3] = {move.x + 1, move.y + 1, move.z + 1};
-
-	ImGui::Begin("Player");
-	ImGui::InputFloat3("InputFloat3",moves);
-	ImGui::SliderFloat3("SliderFloat3", moves, 0.0f, 2.0f);
-	ImGui::Text("DebugCamera ENTER", 2050, 12, 31);
-	ImGui::End();
-
-	move.x = moves[0]-1;
-	move.y = moves[1]-1;
-	move.z = moves[2]-1;
+	if (input_->PushKey(DIK_DOWN)) {
+		move.y -= kCharacterSpeed;
+	}
 
 	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
 
@@ -80,44 +57,48 @@ void Player::Update()
 	Attack();
 
 	// 弾更新
-	for (PlayerBullet* bullet : bullets_) 
-	{
+	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
 
+	// Guiによる移動
+	float inputFloat3[3] = {
+	    worldTransform_.translation_.x, worldTransform_.translation_.y,
+	    worldTransform_.translation_.z};
+	ImGui::Begin("Player");
+	ImGui::Text("debugCamera = Enter");
+	ImGui::SliderFloat3("Player", inputFloat3, -40.0f, 40.0f);
+	ImGui::End();
+	worldTransform_.translation_.x = inputFloat3[0];
+	worldTransform_.translation_.y = inputFloat3[1];
+	worldTransform_.translation_.z = inputFloat3[2];
+
 	// 移動制限
 	const float kMoveLimitX = 33;
-	const float kMoveLimitY = 17;
+	const float kMoveLimitY = 18;
 
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	worldTransform_.TransferMatrix();
+	worldTransform_.UpdateMatrix();
 }
 
-void Player::Rotate() 
-{
-	//回転の速さ[ラジアン/frame]
+void Player::Rotate() {
+	// 回転速さ
 	const float kRotSpeed = 0.02f;
-	// 押した方向でベクトルを変更
-	if (input_->PushKey(DIK_A)) 
-	{
+
+	// 推した方向で移動ベクトル変更
+	if (input_->PushKey(DIK_A)) {
 		worldTransform_.rotation_.y += kRotSpeed;
 	} else if (input_->PushKey(DIK_D)) {
 		worldTransform_.rotation_.y -= kRotSpeed;
 	}
 }
 
-void Player::Attack() 
-{
-	if (input_->TriggerKey(DIK_SPACE)) 
-	{
+void Player::Attack() {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		// 弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
@@ -125,33 +106,29 @@ void Player::Attack()
 		// 速度ベクトルを自機に合わせて回転させる
 		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
-		// 弾を生成し、初期化
+		// 弾を生成し初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
-		// 弾を登録
+		// 弾を登録する
 		bullets_.push_back(newBullet);
 	}
 }
 
-void Player::Draw(ViewProjection viewProjection) 
-{
+void Player::Draw(ViewProjection viewProjection) {
+	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	// 弾描画
-	for (PlayerBullet* bullet : bullets_) 
-	{
+	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
 }
 
-Vector3 Player::GetWorldPosition() 
-{ 
+Vector3 Player::GetWorldPosition() {
 	Vector3 worldPos;
-
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
-
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
 }

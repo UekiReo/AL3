@@ -1,8 +1,8 @@
 #pragma once
-#include "Model.h"
-#include "WorldTransform.h"
 #include "Input.h"
+#include "Model.h"
 #include "PlayerBullet.h"
+#include "WorldTransform.h"
 #include <list>
 
 class Player 
@@ -16,24 +16,20 @@ public:
 
 	void Update();
 
+	void Draw(ViewProjection viewProjection);
+
 	void Rotate();
 
 	void Attack();
-
-	void Draw(ViewProjection viewProjection);
 
 	Vector3 GetWorldPosition();
 
 private:
 	WorldTransform worldTransform_;
-
 	Model* model_ = nullptr;
-
 	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
-
-	PlayerBullet* bullet_ = nullptr;
 
 	std::list<PlayerBullet*> bullets_;
 };

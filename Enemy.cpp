@@ -1,38 +1,44 @@
 ﻿#include "Enemy.h"
-#include "ImGuiManager.h"
 #include "Matrix.h"
-#include "PrimitiveDrawer.h"
-#include "TextureManager.h"
+#include "Player.h"
 #include <cassert>
 
-Enemy::~Enemy()
+Enemy::Enemy() {}
+
+Enemy::~Enemy() 
 {
 	for (EnemyBullet* bullet : bullets_)
 	{
 		delete bullet;
 	}
+	for (TimedCall* timedCall : timedCalls_) 
+	{
+		delete timedCall;
+	}
 }
 
-void Enemy::Initialize(Model* model, uint32_t textureHandle) 
+void Enemy::Initialize(Model* model)
 {
 	assert(model);
 
 	model_ = model;
-	textureHandle_ = textureHandle;
+
+	// テクスチャ読み込み
+	textureHandle_ = TextureManager::Load("black.png");
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_.x = 7.0f;
-	worldTransform_.translation_.y = 2.0f;
-	worldTransform_.translation_.z = 30.0f;
 
-	ApproachPhaseInitialize();
+	worldTransform_.translation_ = {10, 0, 20};
+
+	FireTimer_ = kFireInterval;
+	FireandReset();
 }
 
-void Enemy::Update()
-{
-	bullets_.remove_if([](EnemyBullet* bullet)
-		{
-		if (bullet->IsDead())
+void Enemy::Update() {
+	// デスフラグの立った弾の削除
+	bullets_.remove_if([](EnemyBullet* bullet) 
+	{
+		if (bullet->IsDead()) 
 		{
 			delete bullet;
 			return true;
@@ -40,36 +46,42 @@ void Enemy::Update()
 		return false;
 	});
 
-	worldTransform_.TransferMatrix();
-
-	Vector3 move = {0, 0, 0};
-
-	switch (phase_)
+	// タイマー
+	timedCalls_.remove_if([](TimedCall* timedcall)
 	{
-	case Phase::Approach:
-	default:
-		ApproachPhaseUpdate();
-		for (EnemyBullet* bullet : bullets_) 
+		if (timedcall->IsFinish()) 
 		{
-			bullet->Update();
+			delete timedcall;
+			return true;
 		}
+		return false;
+	});
 
-		break;
+	for (TimedCall* timedCall : timedCalls_) 
+	{
+		timedCall->Update();
+	}
 
-	case Phase::Leave:
-		LeavePhaseUpdate();
-		break;
+	// ワールドトランスフォームの更新
+	worldTransform_.UpdateMatrix();
+
+	// 弾の更新
+	for (EnemyBullet* bullet : bullets_) 
+	{
+		bullet->Update();
 	}
 }
 
-void Enemy::Draw(ViewProjection viewProjection) 
+void Enemy::ChangePhase(EnemyState* newState) 
 {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
+	delete phase_;
+	phase_ = newState;
 }
+
+void Enemy::Move(Vector3 speed) 
+{ 
+	worldTransform_.translation_ += speed; 
+};
 
 void Enemy::Fire()
 {
@@ -78,70 +90,47 @@ void Enemy::Fire()
 	// 弾の速度
 	const float kBulletSpeed = -1.0f;
 
-	// 自キャラのワールド座標を取得
+	Vector3 playerPosition = player_->GetWorldPosition();
+	Vector3 enemyPosition = this->GetWorldPosition();
+	Vector3 velocity = Subtract(playerPosition, enemyPosition);
+	velocity = Normalise(velocity);
+	velocity.x *= -kBulletSpeed;
+	velocity.y *= -kBulletSpeed;
+	velocity.z *= -kBulletSpeed;
 
-
-	// 敵キャラのワールド座標を取得
-
-
-	// 敵キャラ－→自キャラの差分ベクトルを求める
-
-
-	// ベクトルの正規化
-	Vector3 velocity(0, 0, kBulletSpeed);
-
-	// ベクトルの長さを、早さに合わせる
-	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
-	// 弾を生成し、初期化
+	// 弾を生成し初期化
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
-	// 弾を登録
+	// 弾を登録する
 	bullets_.push_back(newBullet);
 }
 
-void Enemy::ApproachPhaseInitialize() { shotTimer_ = 0; }
+void Enemy::Draw(const ViewProjection& viewProjection) {
+	// モデルの描画
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-void Enemy::ApproachPhaseUpdate() 
-{
-	const float kApproachEnemySpeed = 0.2f;
-	Vector3 move = {0, 0, 0};
-
-	move.z -= kApproachEnemySpeed;
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	shotTimer_--;
-
-	if (shotTimer_ < 0) 
+	// 弾の描画
+	for (EnemyBullet* bullet : bullets_)
 	{
-		Fire();
-
-		shotTimer_ = kFireInterval;
+		bullet->Draw(viewProjection);
 	}
 }
 
-void Enemy::LeavePhaseUpdate() 
+void Enemy::FireandReset() 
 {
-	const float kLeaveEnemyLPSpeed = 0.3f;
-	Vector3 move = {0, 0, 0};
+	// 攻撃処理
+	Fire();
 
-	move.x -= kLeaveEnemyLPSpeed;
-	move.y += kLeaveEnemyLPSpeed;
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	// タイマー
+	timedCalls_.push_back(new TimedCall(std::bind(&Enemy::FireandReset, this), kFireInterval));
 }
 
 Vector3 Enemy::GetWorldPosition() 
 {
 	Vector3 worldPos;
-
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
-
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
 }

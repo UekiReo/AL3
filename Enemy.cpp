@@ -7,38 +7,43 @@ Enemy::Enemy() {}
 
 Enemy::~Enemy() 
 {
-	for (EnemyBullet* bullet : bullets_)
+
+	for (EnemyBullet* bullet : bullets_) 
 	{
 		delete bullet;
 	}
-	for (TimedCall* timedCall : timedCalls_) 
+
+	for (TimedCall* timedCall : timedCalls_)
 	{
 		delete timedCall;
 	}
 }
 
-void Enemy::Initialize(Model* model)
+void Enemy::Initialize(Model* model) 
 {
 	assert(model);
 
 	model_ = model;
 
+	phase_ = new EnemyApproach;
+
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("black.png");
-
+	
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = {10, 0, 20};
+	worldTransform_.translation_ = {10, 0, 30};
 
 	FireTimer_ = kFireInterval;
 	FireandReset();
 }
 
-void Enemy::Update() {
+void Enemy::Update() 
+{
 	// デスフラグの立った弾の削除
-	bullets_.remove_if([](EnemyBullet* bullet) 
+	bullets_.remove_if([](EnemyBullet* bullet)
 	{
-		if (bullet->IsDead()) 
+		if (bullet->IsDead())
 		{
 			delete bullet;
 			return true;
@@ -49,7 +54,7 @@ void Enemy::Update() {
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall)
 	{
-		if (timedcall->IsFinish()) 
+		if (timedcall->IsFinish())
 		{
 			delete timedcall;
 			return true;
@@ -57,16 +62,18 @@ void Enemy::Update() {
 		return false;
 	});
 
-	for (TimedCall* timedCall : timedCalls_) 
+	for (TimedCall* timedCall : timedCalls_)
 	{
 		timedCall->Update();
 	}
+
+	phase_->Update(this);
 
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 
 	// 弾の更新
-	for (EnemyBullet* bullet : bullets_) 
+	for (EnemyBullet* bullet : bullets_)
 	{
 		bullet->Update();
 	}
@@ -78,12 +85,12 @@ void Enemy::ChangePhase(EnemyState* newState)
 	phase_ = newState;
 }
 
-void Enemy::Move(Vector3 speed) 
+void Enemy::Move(Vector3 speed)
 { 
 	worldTransform_.translation_ += speed; 
 };
 
-void Enemy::Fire()
+void Enemy::Fire() 
 {
 	assert(player_);
 
@@ -106,12 +113,13 @@ void Enemy::Fire()
 	bullets_.push_back(newBullet);
 }
 
-void Enemy::Draw(const ViewProjection& viewProjection) {
+void Enemy::Draw(const ViewProjection& viewProjection) 
+{
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	// 弾の描画
-	for (EnemyBullet* bullet : bullets_)
+	// 弾描画
+	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Draw(viewProjection);
 	}

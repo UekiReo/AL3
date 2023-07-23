@@ -16,15 +16,22 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 
 	worldTransform_.translation_ = position;
 
+	worldTransform_.scale_ = {0.5f, 0.5f, 3.0f};
+
 	velocity_ = velocity;
 }
 
 void EnemyBullet::Update() 
 {
+	Vector3 toPlayer = Subtract(player_->GetWorldPosition(), worldTransform_.translation_);
+	toPlayer = Normalise(toPlayer);
+	velocity_ = Normalise(velocity_);
+	velocity_ = Slerp(velocity_, toPlayer, 0.1f);
+
 	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, velocity_);
 
 	// 時間経過で消滅
-	if (--deathTimer_ <= 0) 
+	if (--deathTimer_ <= 0)
 	{
 		isDead_ = true;
 	}

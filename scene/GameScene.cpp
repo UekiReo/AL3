@@ -5,14 +5,19 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {
+GameScene::~GameScene() 
+{
 	delete model_;
 	delete player_;
 	delete debugCamera_;
 	delete enemy_;
+	delete collisionManager_;
+	delete skydome_;
+	delete skydomeModel_;
 }
 
-void GameScene::Initialize() {
+void GameScene::Initialize() 
+{
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -45,43 +50,72 @@ void GameScene::Initialize() {
 	// 敵キャラの初期化
 	Vector3 position = {0, 0, 20};
 	enemy_->Initialize(model_);
+
+	collisionManager_ = new CollisionManager();
+
+	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
+	skydome_ = new Skydome();
+	skydome_->Initialize(skydomeModel_);
 }
 
-void GameScene::Update() {
+void GameScene::Update() 
+{
 	// 自キャラの更新
 	player_->Update();
 
 	// 敵キャラの更新
 	enemy_->Update();
 
-	CheckAllCollisions();
+	collisionManager_->ClearColliders();
+	collisionManager_->AddCollider(player_);
+	collisionManager_->AddCollider(enemy_);
+
+	for (PlayerBullet* pBullet : player_->GetBullets()) 
+	{
+		collisionManager_->AddCollider(pBullet);
+	}
+
+	for (EnemyBullet* eBullet : enemy_->GetBullets())
+	{
+		collisionManager_->AddCollider(eBullet);
+	}
+
+	collisionManager_->CheckAllCollision();
+
+	skydome_->Update();
 
 	debugCamera_->Update();
 
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_Q)) {
-		if (isDebugCameraActive_ == false) {
+	if (input_->TriggerKey(DIK_RETURN))
+	{
+		if (isDebugCameraActive_ == false) 
+		{
 			isDebugCameraActive_ = true;
-		} else {
+		} else 
+		{
 			isDebugCameraActive_ = false;
 		}
 	}
 #endif
 	// カメラの処理
-	if (isDebugCameraActive_) {
+	if (isDebugCameraActive_) 
+	{
 		// デバッグカメラの更新
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
-	} else {
+	} else 
+	{
 		// ビュープロジェクション行列の更新と転送
 		viewProjection_.UpdateMatrix();
 	}
 }
 
-void GameScene::Draw() {
+void GameScene::Draw() 
+{
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -109,6 +143,7 @@ void GameScene::Draw() {
 	/// </summary>
 	enemy_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -125,71 +160,5 @@ void GameScene::Draw() {
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
-#pragma endregion
-}
-
-void GameScene::CheckAllCollisions() {
-	float enemyBulletRadius = 0.5f;
-	float playerBulletRadius = 0.5f;
-	float playeyrRadius = 1.0f;
-	float enemyRadius = 1.0f;
-
-	Vector3 posA, posB;
-	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
-
-#pragma region 自キャラと敵弾
-	posA = player_->GetWorldPosition();
-	for (EnemyBullet* bullet : enemyBullets) {
-		posB = bullet->GetWorldPosition();
-
-		Vector3 Distance = {
-		    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
-		    (posB.z - posA.z) * (posB.z - posA.z)};
-
-		if (Distance.x + Distance.y + Distance.z <=
-		    (playeyrRadius + enemyBulletRadius) * (playeyrRadius + enemyBulletRadius)) {
-			player_->OnCollision();
-			bullet->OnCollision();
-		}
-	}
-#pragma endregion
-
-#pragma region 自弾と敵キャラ
-	posA = enemy_->GetWorldPosition();
-	for (PlayerBullet* bullet : playerBullets) {
-		posB = bullet->GetWorldPosition();
-
-		Vector3 Distance = {
-		    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
-		    (posB.z - posA.z) * (posB.z - posA.z)};
-
-		if (Distance.x + Distance.y + Distance.z <=
-		    (enemyRadius + playerBulletRadius) * (enemyRadius + playerBulletRadius)) {
-			enemy_->OnCollision();
-			bullet->OnCollision();
-		}
-	}
-#pragma endregion
-
-#pragma region 自弾と敵弾
-	for (EnemyBullet* eBullet : enemyBullets) {
-
-		posA = eBullet->GetWorldPosition();
-		for (PlayerBullet* pbullet : playerBullets) {
-			posB = pbullet->GetWorldPosition();
-
-			Vector3 Distance = {
-			    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
-			    (posB.z - posA.z) * (posB.z - posA.z)};
-
-			if (Distance.x + Distance.y + Distance.z <=
-			    (enemyBulletRadius + playerBulletRadius) *
-			        (enemyBulletRadius + playerBulletRadius)) {
-				eBullet->OnCollision();
-				pbullet->OnCollision();
-			}
-		}
-	}
 #pragma endregion
 }

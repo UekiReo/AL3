@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Collider.h"
+#include "CollisionConfig.h"
 
-class PlayerBullet 
-{
+class PlayerBullet : public Collider {
 public:
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
 
@@ -11,12 +12,12 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	bool IsDead() const { return isDead_; }
-
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
+
+	bool IsDead() const { return isDead_; }
 
 private:
 	WorldTransform worldTransform_;

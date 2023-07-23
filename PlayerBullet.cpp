@@ -15,6 +15,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.translation_ = position;
 
 	velocity_ = velocity;
+
+	SetCollisionAttribute(CollisionConfig::kCollisionAttributePlayer);
+	SetCollisionMask(~CollisionConfig::kCollisionAttributePlayer);
 }
 
 void PlayerBullet::Update()
@@ -22,7 +25,7 @@ void PlayerBullet::Update()
 	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, velocity_);
 
 	// 時間経過で消滅
-	if (--deathTimer_ <= 0)
+	if (--deathTimer_ <= 0) 
 	{
 		isDead_ = true;
 	}

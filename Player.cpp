@@ -6,9 +6,9 @@
 
 Player::Player() {}
 
-Player::~Player() 
+Player::~Player()
 {
-	for (PlayerBullet* bullet : bullets_)
+	for (PlayerBullet* bullet : bullets_) 
 	{
 		delete bullet;
 	}
@@ -25,6 +25,9 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 	worldTransform_.Initialize();
 
 	input_ = Input::GetInstance();
+
+	SetCollisionAttribute(CollisionConfig::kCollisionAttributePlayer);
+	SetCollisionMask(~CollisionConfig::kCollisionAttributePlayer);
 }
 
 void Player::Update()
@@ -32,7 +35,7 @@ void Player::Update()
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](PlayerBullet* bullet) 
 	{
-		if (bullet->IsDead())
+		if (bullet->IsDead()) 
 		{
 			delete bullet;
 			return true;
@@ -43,17 +46,17 @@ void Player::Update()
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 
-	if (input_->PushKey(DIK_LEFT))
+	if (input_->PushKey(DIK_LEFT)) 
 	{
 		move.x -= kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_RIGHT))
+	if (input_->PushKey(DIK_RIGHT)) 
 	{
 		move.x += kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_UP))
+	if (input_->PushKey(DIK_UP)) 
 	{
 		move.y += kCharacterSpeed;
 	}
@@ -101,25 +104,23 @@ void Player::Update()
 	worldTransform_.UpdateMatrix();
 }
 
-void Player::Rotate() 
+void Player::Rotate()
 {
 	// 回転速さ
 	const float kRotSpeed = 0.02f;
 
 	// 推した方向で移動ベクトル変更
-	if (input_->PushKey(DIK_A))
+	if (input_->PushKey(DIK_A)) 
 	{
 		worldTransform_.rotation_.y += kRotSpeed;
-
-	} else if (input_->PushKey(DIK_D))
-	{
+	} else if (input_->PushKey(DIK_D)) {
 		worldTransform_.rotation_.y -= kRotSpeed;
 	}
 }
 
 void Player::Attack()
 {
-	if (input_->TriggerKey(DIK_SPACE)) 
+	if (input_->TriggerKey(DIK_SPACE))
 	{
 		// 弾の速度
 		const float kBulletSpeed = 1.0f;
@@ -145,13 +146,13 @@ void Player::Draw(ViewProjection viewProjection)
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	// 弾描画
-	for (PlayerBullet* bullet : bullets_) 
+	for (PlayerBullet* bullet : bullets_)
 	{
 		bullet->Draw(viewProjection);
 	}
 }
 
-Vector3 Player::GetWorldPosition() 
+Vector3 Player::GetWorldPosition()
 {
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];

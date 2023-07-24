@@ -11,8 +11,6 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
-#include "CollisionManager.h"
-#include "CollisionConfig.h"
 #include "Skydome.h"
 
 
@@ -48,6 +46,11 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollisions();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -68,8 +71,6 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 
 	Enemy* enemy_ = nullptr;
-
-	CollisionManager* collisionManager_;
 
 	Skydome* skydome_;
 	Model* skydomeModel_ = nullptr;

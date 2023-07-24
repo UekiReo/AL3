@@ -26,7 +26,7 @@ void Enemy::Initialize(Model* model)
 	model_ = model;
 
 	// テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("black.png");
+	textureHandle_ = TextureManager::Load("sample.png");
 
 	// フェーズ開始
 	 phase_ = new EnemyApproach();
@@ -37,9 +37,6 @@ void Enemy::Initialize(Model* model)
 
 	FireTimer_ = kFireInterval;
 	FireandReset();
-
-	SetCollisionAttribute(CollisionConfig::kCollisionAttributeEnemy);
-	SetCollisionMask(~CollisionConfig::kCollisionAttributeEnemy);
 }
 
 void Enemy::Update() 

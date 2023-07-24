@@ -4,10 +4,9 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
-#include "Collider.h"
-#include "CollisionConfig.h"
 
-class Player : public Collider {
+class Player
+{
 public:
 	Player();
 
@@ -23,10 +22,10 @@ public:
 
 	void Attack();
 
-	Vector3 GetWorldPosition() override;
+	Vector3 GetWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision() override;
+	void OnCollision();
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 

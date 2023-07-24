@@ -1,12 +1,10 @@
 ﻿#pragma once
 #include "Model.h"
 #include "WorldTransform.h"
-#include "Collider.h"
-#include "CollisionConfig.h"
 
 class Player;
 
-class EnemyBullet : public Collider
+class EnemyBullet
 {
 public:
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
@@ -20,9 +18,9 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision() override;
+	void OnCollision();
 
-	Vector3 GetWorldPosition() override;
+	Vector3 GetWorldPosition();
 
 private:
 	WorldTransform worldTransform_;

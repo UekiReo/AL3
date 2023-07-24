@@ -10,7 +10,7 @@ public:
 
 	void Update();
 
-	void Draw(const ViewProjection& viewPrijection);
+	void Draw(const ViewProjection& viewProjection);
 
 private:
 	WorldTransform worldTransform_;

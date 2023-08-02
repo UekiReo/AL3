@@ -1,6 +1,6 @@
 #include "RailCamera.h"
 
-void RailCamera::Initialize(const Vector3& pos, const Vector3& rotation)
+void RailCamera::Initialize(const Vector3& pos, const Vector3& rotation) 
 {
 	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
 	worldTransform_.translation_ = pos;

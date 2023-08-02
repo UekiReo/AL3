@@ -13,11 +13,11 @@ GameScene::~GameScene()
 	delete enemy_;
 	delete skydome_;
 	delete skydomeModel_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() 
 {
-
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
@@ -35,6 +35,7 @@ void GameScene::Initialize()
 
 	// 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetVisible(true);
+
 	// 参照するビュープロジェクションを指定
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
@@ -47,12 +48,15 @@ void GameScene::Initialize()
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
 	// 敵キャラの初期化
-	Vector3 position = {0, 0, 20};
+	Vector3 position = {10, 0, 100};
 	enemy_->Initialize(model_);
 
 	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
 	skydome_ = new Skydome();
 	skydome_->Initialize(skydomeModel_);
+
+	railCamera_ = new RailCamera();
+	railCamera_->Initialize({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
 }
 
 void GameScene::Update() 
@@ -66,6 +70,8 @@ void GameScene::Update()
 	skydome_->Update();
 
 	debugCamera_->Update();
+
+	railCamera_->Update();
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_RETURN))

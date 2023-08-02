@@ -29,3 +29,5 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 
 // アフィン変換
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+Matrix4x4 Inverse(const Matrix4x4& m1);

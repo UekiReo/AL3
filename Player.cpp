@@ -3,7 +3,6 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-
 Player::Player() {}
 
 Player::~Player()

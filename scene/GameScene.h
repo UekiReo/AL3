@@ -11,8 +11,8 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
-#include "Skydome.h"
 #include "RailCamera.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン

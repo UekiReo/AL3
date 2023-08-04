@@ -13,7 +13,7 @@ Player::~Player()
 	}
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle)
+void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
 {
 	// NULLポインタチェック
 	assert(model);
@@ -24,6 +24,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 	worldTransform_.Initialize();
 
 	input_ = Input::GetInstance();
+	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
 }
 
 void Player::Update()
@@ -80,10 +81,12 @@ void Player::Update()
 	float inputFloat3[3] = {
 	    worldTransform_.translation_.x, worldTransform_.translation_.y,
 	    worldTransform_.translation_.z};
+
 	ImGui::Begin("Player");
 	ImGui::Text("debugCamera = Enter");
 	ImGui::SliderFloat3("Player", inputFloat3, -40.0f, 40.0f);
 	ImGui::End();
+
 	worldTransform_.translation_.x = inputFloat3[0];
 	worldTransform_.translation_.y = inputFloat3[1];
 	worldTransform_.translation_.z = inputFloat3[2];
@@ -155,4 +158,9 @@ Vector3 Player::GetWorldPosition()
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
+}
+
+void Player::Setparent(const WorldTransform* parent)
+{ 
+	worldTransform_.parent_ = parent; 
 }

@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
+#include "CMath.h"
 #include <list>
 
 class Player
@@ -12,7 +13,7 @@ public:
 
 	~Player();
 
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
 
 	void Update();
 
@@ -28,6 +29,8 @@ public:
 	void OnCollision();
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	void Setparent(const WorldTransform* parent);
 
 private:
 	WorldTransform worldTransform_;

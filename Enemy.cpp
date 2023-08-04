@@ -2,24 +2,19 @@
 #include "Matrix.h"
 #include "Player.h"
 #include <cassert>
+#include "GameScene.h"
 
 Enemy::Enemy() {}
 
 Enemy::~Enemy() 
 {
-
-	for (EnemyBullet* bullet : bullets_) 
-	{
-		delete bullet;
-	}
-
 	for (TimedCall* timedCall : timedCalls_)
 	{
 		delete timedCall;
 	}
 }
 
-void Enemy::Initialize(Model* model, Vector3 pos) {
+void Enemy::Initialize(Model* model, const Vector3& pos, const Vector3& velocity) {
 	assert(model);
 
 	model_ = model;
@@ -32,6 +27,8 @@ void Enemy::Initialize(Model* model, Vector3 pos) {
 
 	worldTransform_.Initialize();
 
+	velocity_ = velocity;
+
 	worldTransform_.translation_ = pos;
 
 	FireTimer_ = kFireInterval;
@@ -40,28 +37,19 @@ void Enemy::Initialize(Model* model, Vector3 pos) {
 
 void Enemy::Update() 
 {
-	// デスフラグの立った弾の削除
-	bullets_.remove_if([](EnemyBullet* bullet) 
-	{
-		if (bullet->IsDead())
-		{
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
-
 	 phase_->Update(this);
 
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall) 
 		{
-		if (timedcall->IsFinish()) {
+		if (timedcall->IsFinish())
+		{
 			delete timedcall;
 			return true;
 		}
 		return false;
 	});
+
 	for (TimedCall* timedCall : timedCalls_)
 	{
 		timedCall->Update();
@@ -69,12 +57,6 @@ void Enemy::Update()
 
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
-
-	// 弾更新
-	for (EnemyBullet* bullet : bullets_)
-	{
-		bullet->Update();
-	}
 }
 
 void Enemy::ChangePhase(EnemyState* newState)
@@ -109,21 +91,18 @@ void Enemy::Fire()
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 	// 弾を登録する
-	bullets_.push_back(newBullet);
+	gameScene_->AddEnemyBullet(newBullet);
 }
 
-void Enemy::OnCollision() {}
+void Enemy::OnCollision() 
+{
+	isDead_ = true; 
+}
 
 void Enemy::Draw(const ViewProjection& viewProjection)
 {
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-
-	// 弾描画
-	for (EnemyBullet* bullet : bullets_)
-	{
-		bullet->Draw(viewProjection);
-	}
 }
 
 void Enemy::FireandReset() 

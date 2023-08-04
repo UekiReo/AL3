@@ -36,6 +36,7 @@ void GameScene::Initialize()
 	audio_ = Audio::GetInstance();
 
 	textureHandle_ = TextureManager::Load("sample.png");
+	TextureManager::Load("black.png");
 	model_ = Model::Create();
 
 	worldTransform_.Initialize();
@@ -72,7 +73,7 @@ void GameScene::Initialize()
 void GameScene::Update() 
 {
 	// 自キャラの更新
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	// 敵キャラの更新
 	UpdateEnemyPopCommands();
@@ -196,6 +197,8 @@ void GameScene::Draw()
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
+	player_->DrawUI();
+
 	/// </summary>
 
 	// スプライト描画後処理

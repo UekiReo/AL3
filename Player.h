@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include "CMath.h"
+#include <Sprite.h>
 #include <list>
 
 class Player
@@ -15,13 +16,15 @@ public:
 
 	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
 
-	void Update();
+	void Update(ViewProjection viewProjection);
 
 	void Draw(ViewProjection viewProjection);
 
 	void Rotate();
 
 	void Attack();
+
+	void DrawUI();
 
 	Vector3 GetWorldPosition();
 
@@ -40,4 +43,8 @@ private:
 	Input* input_ = nullptr;
 
 	std::list<PlayerBullet*> bullets_;
+
+	// 3Dレティクルのワールドトランスフォーム
+	WorldTransform worldtransform3DReticle_;
+	Sprite* sprite2DReticle_ = nullptr;
 };

@@ -11,6 +11,8 @@ Player::~Player()
 	{
 		delete bullet;
 	}
+
+	delete sprite2DReticle_;
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
@@ -25,15 +27,20 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
 
 	input_ = Input::GetInstance();
 	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
+
+	// 3Dレティクルのワールドトランスフォームの初期化
+	worldtransform3DReticle_.Initialize();
+
+	uint32_t textureReticle = TextureManager::Load("black.png");
+
+	sprite2DReticle_ =
+	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
-void Player::Update()
-{
+void Player::Update(ViewProjection viewProjection) {
 	// デスフラグの立った弾の削除
-	bullets_.remove_if([](PlayerBullet* bullet) 
-	{
-		if (bullet->IsDead()) 
-		{
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
 		}
@@ -43,23 +50,19 @@ void Player::Update()
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 
-	if (input_->PushKey(DIK_LEFT)) 
-	{
+	if (input_->PushKey(DIK_LEFT)) {
 		move.x -= kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_RIGHT)) 
-	{
+	if (input_->PushKey(DIK_RIGHT)) {
 		move.x += kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_UP)) 
-	{
+	if (input_->PushKey(DIK_UP)) {
 		move.y += kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_DOWN)) 
-	{
+	if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
 
@@ -72,8 +75,7 @@ void Player::Update()
 	Attack();
 
 	// 弾更新
-	for (PlayerBullet* bullet : bullets_)
-	{
+	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
 
@@ -101,6 +103,32 @@ void Player::Update()
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
 	worldTransform_.UpdateMatrix();
+
+	// 自機から3Dレティクルへの距離
+	const float kDistancePlayerTo3DReticle = 50.0f;
+	// 自機から3Dレティクルのオフセット(Z+向き)
+	Vector3 offset = {0, 0, 1.0f};
+
+	// 自機のワールド行列の回転を反映
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
+	// ベクトルの長さを整える
+	offset = Multiply(kDistancePlayerTo3DReticle, Normalise(offset));
+
+	// 3Dレティクルの座標を設定
+	worldtransform3DReticle_.translation_ = Add(GetWorldPosition(), offset);
+	worldtransform3DReticle_.UpdateMatrix();
+
+	Vector3 positionReticle = {
+	    worldtransform3DReticle_.matWorld_.m[3][0], worldtransform3DReticle_.matWorld_.m[3][1],
+	    worldtransform3DReticle_.matWorld_.m[3][2]};
+
+	Matrix4x4 matViewport =
+	    MakeViewportMatrix(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight, 0.0f, 1.0f);
+
+	Matrix4x4 matViewProjectionViewport =
+	    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
+	positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 }
 
 void Player::Rotate()
@@ -126,7 +154,12 @@ void Player::Attack()
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		// 速度ベクトルを自機に合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		velocity = Subtract(
+		    {worldtransform3DReticle_.matWorld_.m[3][0],
+			 worldtransform3DReticle_.matWorld_.m[3][1],
+		     worldtransform3DReticle_.matWorld_.m[3][2]},
+		    GetWorldPosition());
+		velocity = Multiply(kBulletSpeed, Normalise(velocity));
 
 		// 弾を生成し初期化
 		PlayerBullet* newBullet = new PlayerBullet();
@@ -150,6 +183,12 @@ void Player::Draw(ViewProjection viewProjection)
 		bullet->Draw(viewProjection);
 	}
 }
+
+void Player::DrawUI()
+{ 
+	sprite2DReticle_->Draw(); 
+}
+
 
 Vector3 Player::GetWorldPosition()
 {

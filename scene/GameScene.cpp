@@ -36,7 +36,7 @@ void GameScene::Initialize()
 	audio_ = Audio::GetInstance();
 
 	textureHandle_ = TextureManager::Load("sample.png");
-	TextureManager::Load("black.png");
+	TextureManager::Load("reticle.png");
 	model_ = Model::Create();
 
 	worldTransform_.Initialize();

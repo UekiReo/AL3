@@ -31,7 +31,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
 	// 3Dレティクルのワールドトランスフォームの初期化
 	worldtransform3DReticle_.Initialize();
 
-	uint32_t textureReticle = TextureManager::Load("black.png");
+	uint32_t textureReticle = TextureManager::Load("reticle.png");
 
 	sprite2DReticle_ =
 	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});

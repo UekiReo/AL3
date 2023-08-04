@@ -149,75 +149,71 @@ void GameScene::Draw()
 
 #pragma endregion
 }
-
-void GameScene::CheckAllCollisions() 
+void GameScene::CheckAllCollisions()
 {
-	Vector3 posA, posB;
-	float PlayerRadius = 1.0f;
-	float EnemyRadius = 1.0f;
-	float PlayerBulletRadius = 1.0f;
-	float EnemyBulletRadius = 1.0f;
+	float enemyBulletRadius = 0.5f;
+	float playerBulletRadius = 0.5f;
+	float playeyrRadius = 1.0f;
+	float enemyRadius = 1.0f;
 
+	Vector3 posA, posB;
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
-#pragma region 自キャラと敵弾の当たり判定
+#pragma region 自キャラと敵弾
 	posA = player_->GetWorldPosition();
-
-	for (EnemyBullet* bullet : enemyBullets) {
+	for (EnemyBullet* bullet : enemyBullets)
+	{
 		posB = bullet->GetWorldPosition();
 
-		// 座標AとBの距離を求める
-		Vector3 distance = {
+		Vector3 Distance = {
 		    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
 		    (posB.z - posA.z) * (posB.z - posA.z)};
 
-		if (distance.x + distance.y + distance.z <=
-		    (PlayerRadius + EnemyBulletRadius) * (PlayerRadius + EnemyBulletRadius)) {
+		if (Distance.x + Distance.y + Distance.z <=
+		    (playeyrRadius + enemyBulletRadius) * (playeyrRadius + enemyBulletRadius)) {
 			player_->OnCollision();
-
 			bullet->OnCollision();
 		}
 	}
 #pragma endregion
 
-#pragma region 敵キャラと自弾の当たり判定
+#pragma region 自弾と敵キャラ
 	posA = enemy_->GetWorldPosition();
-
-	for (PlayerBullet* bullet : playerBullets) {
+	for (PlayerBullet* bullet : playerBullets) 
+	{
 		posB = bullet->GetWorldPosition();
 
-		// 座標AとBの距離を求める
-		Vector3 distance = {
+		Vector3 Distance = {
 		    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
 		    (posB.z - posA.z) * (posB.z - posA.z)};
 
-		if (distance.x + distance.y + distance.z <=
-		    (EnemyRadius + PlayerBulletRadius) * (EnemyRadius + PlayerBulletRadius)) {
+		if (Distance.x + Distance.y + Distance.z <=
+		    (enemyRadius + playerBulletRadius) * (enemyRadius + playerBulletRadius)) {
 			enemy_->OnCollision();
-
 			bullet->OnCollision();
 		}
 	}
 #pragma endregion
 
-#pragma region 自弾と敵弾の当たり判定
-	for (PlayerBullet* playerBullet : playerBullets) {
-		posA = playerBullet->GetWorldPosition();
-		for (EnemyBullet* enemhyBullet : enemyBullets) {
-			posB = enemhyBullet->GetWorldPosition();
+#pragma region 自弾と敵弾
+	for (EnemyBullet* eBullet : enemyBullets)
+	{
 
-			// 座標AとBの距離を求める
-			Vector3 distance = {
+		posA = eBullet->GetWorldPosition();
+		for (PlayerBullet* pbullet : playerBullets)
+		{
+			posB = pbullet->GetWorldPosition();
+
+			Vector3 Distance = {
 			    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
 			    (posB.z - posA.z) * (posB.z - posA.z)};
 
-			if (distance.x + distance.y + distance.z <=
-			    (EnemyBulletRadius + PlayerBulletRadius) *
-			        (EnemyBulletRadius + PlayerBulletRadius)) {
-				playerBullet->OnCollision();
-
-				enemhyBullet->OnCollision();
+			if (Distance.x + Distance.y + Distance.z <=
+			    (enemyBulletRadius + playerBulletRadius) *
+			        (enemyBulletRadius + playerBulletRadius)) {
+				eBullet->OnCollision();
+				pbullet->OnCollision();
 			}
 		}
 	}

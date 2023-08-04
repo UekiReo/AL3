@@ -86,7 +86,7 @@ void GameScene::Update()
 	}
 #endif
 	// カメラの処理
-	if (isDebugCameraActive_) 
+	if (isDebugCameraActive_)
 	{
 		// デバッグカメラの更新
 		debugCamera_->Update();
@@ -95,12 +95,11 @@ void GameScene::Update()
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
-		// レールカメラの更新
 		railCamera_->Update();
 		viewProjection_.matView = railCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
 	}
 }
 

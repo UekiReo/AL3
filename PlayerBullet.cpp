@@ -17,7 +17,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	velocity_ = velocity;
 }
 
-void PlayerBullet::Update()
+void PlayerBullet::Update() 
 {
 	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, velocity_);
 
@@ -33,10 +33,10 @@ void PlayerBullet::Update()
 
 void PlayerBullet::OnCollision() 
 { 
-	isDead_ = true;
+	isDead_ = true; 
 }
 
-void PlayerBullet::Draw(const ViewProjection& viewProjection)
+void PlayerBullet::Draw(const ViewProjection& viewProjection) 
 {
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);

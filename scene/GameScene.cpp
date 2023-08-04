@@ -63,6 +63,8 @@ void GameScene::Update()
 	// 敵キャラの更新
 	enemy_->Update();
 
+	CheckAllCollisions();
+
 	skydome_->Update();
 
 	debugCamera_->Update();

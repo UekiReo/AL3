@@ -26,6 +26,8 @@ public:
 
 	void DrawUI();
 
+	void SetReticle(const ViewProjection view);
+
 	Vector3 GetWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数
@@ -46,5 +48,9 @@ private:
 
 	// 3Dレティクルのワールドトランスフォーム
 	WorldTransform worldtransform3DReticle_;
+
+	//2Dレティクル
 	Sprite* sprite2DReticle_ = nullptr;
+	int fireTimer;
 };
+

@@ -26,6 +26,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
 	worldTransform_.Initialize();
 
 	input_ = Input::GetInstance();
+	fireTimer = 30;
 	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
 
 	// 3Dレティクルのワールドトランスフォームの初期化
@@ -37,9 +38,11 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos)
 	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
-void Player::Update(ViewProjection viewProjection) {
+void Player::Update(ViewProjection viewProjection) 
+{
 	// デスフラグの立った弾の削除
-	bullets_.remove_if([](PlayerBullet* bullet) {
+	bullets_.remove_if([](PlayerBullet* bullet) 
+		{
 		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
@@ -50,23 +53,32 @@ void Player::Update(ViewProjection viewProjection) {
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 
-	if (input_->PushKey(DIK_LEFT)) {
+	if (input_->PushKey(DIK_LEFT)) 
+	{
 		move.x -= kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_RIGHT)) {
+	if (input_->PushKey(DIK_RIGHT))
+	{
 		move.x += kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_UP)) {
+	if (input_->PushKey(DIK_UP)) 
+	{
 		move.y += kCharacterSpeed;
 	}
 
-	if (input_->PushKey(DIK_DOWN)) {
+	if (input_->PushKey(DIK_DOWN))
+	{
 		move.y -= kCharacterSpeed;
 	}
 
-	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
+	XINPUT_STATE joystate;
+	if (Input::GetInstance()->GetJoystickState(0, joystate))
+	{
+		move.x += (float)joystate.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		move.y += (float)joystate.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+	}
 
 	// 旋回処理
 	Rotate();
@@ -75,7 +87,8 @@ void Player::Update(ViewProjection viewProjection) {
 	Attack();
 
 	// 弾更新
-	for (PlayerBullet* bullet : bullets_) {
+	for (PlayerBullet* bullet : bullets_) 
+	{
 		bullet->Update();
 	}
 
@@ -93,42 +106,37 @@ void Player::Update(ViewProjection viewProjection) {
 	worldTransform_.translation_.y = inputFloat3[1];
 	worldTransform_.translation_.z = inputFloat3[2];
 
-	// 移動制限
-	const float kMoveLimitX = 33;
-	const float kMoveLimitY = 18;
-
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
 
 	worldTransform_.UpdateMatrix();
 
-	// 自機から3Dレティクルへの距離
-	const float kDistancePlayerTo3DReticle = 50.0f;
-	// 自機から3Dレティクルのオフセット(Z+向き)
-	Vector3 offset = {0, 0, 1.0f};
+	SetReticle(viewProjection);
 
-	// 自機のワールド行列の回転を反映
-	offset = TransformNormal(offset, worldTransform_.matWorld_);
-	// ベクトルの長さを整える
-	offset = Multiply(kDistancePlayerTo3DReticle, Normalise(offset));
+	//// 自機から3Dレティクルへの距離
+	//const float kDistancePlayerTo3DReticle = 50.0f;
+	//// 自機から3Dレティクルのオフセット(Z+向き)
+	//Vector3 offset = {0, 0, 1.0f};
 
-	// 3Dレティクルの座標を設定
-	worldtransform3DReticle_.translation_ = Add(GetWorldPosition(), offset);
-	worldtransform3DReticle_.UpdateMatrix();
+	//// 自機のワールド行列の回転を反映
+	//offset = TransformNormal(offset, worldTransform_.matWorld_);
+	//// ベクトルの長さを整える
+	//offset = Multiply(kDistancePlayerTo3DReticle, Normalise(offset));
 
-	Vector3 positionReticle = {
-	    worldtransform3DReticle_.matWorld_.m[3][0], worldtransform3DReticle_.matWorld_.m[3][1],
-	    worldtransform3DReticle_.matWorld_.m[3][2]};
+	//// 3Dレティクルの座標を設定
+	//worldtransform3DReticle_.translation_ = Add(GetWorldPosition(), offset);
+	//worldtransform3DReticle_.UpdateMatrix();
 
-	Matrix4x4 matViewport =
-	    MakeViewportMatrix(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight, 0.0f, 1.0f);
+	//Vector3 positionReticle = {
+	//    worldtransform3DReticle_.matWorld_.m[3][0], worldtransform3DReticle_.matWorld_.m[3][1],
+	//    worldtransform3DReticle_.matWorld_.m[3][2]};
 
-	Matrix4x4 matViewProjectionViewport =
-	    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
-	positionReticle = Transform(positionReticle, matViewProjectionViewport);
-	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+	//Matrix4x4 matViewport =
+	//    MakeViewportMatrix(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight, 0.0f, 1.0f);
+
+	//Matrix4x4 matViewProjectionViewport =
+	//    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
+	//positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	//sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 }
 
 void Player::Rotate()
@@ -147,26 +155,64 @@ void Player::Rotate()
 
 void Player::Attack()
 {
-	if (input_->TriggerKey(DIK_SPACE))
+	fireTimer--;
+
+	if (fireTimer <= 0)
 	{
-		// 弾の速度
-		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
+		if (input_->TriggerKey(DIK_SPACE))
+		{
+			// 弾の速度
+			const float kBulletSpeed = 1.0f;
+			Vector3 velocity(0, 0, kBulletSpeed);
 
-		// 速度ベクトルを自機に合わせて回転させる
-		velocity = Subtract(
-		    {worldtransform3DReticle_.matWorld_.m[3][0],
-			 worldtransform3DReticle_.matWorld_.m[3][1],
-		     worldtransform3DReticle_.matWorld_.m[3][2]},
-		    GetWorldPosition());
-		velocity = Multiply(kBulletSpeed, Normalise(velocity));
+			// 速度ベクトルを自機に合わせて回転させる
+			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
-		// 弾を生成し初期化
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+			velocity = Subtract(
+			    {worldtransform3DReticle_.matWorld_.m[3][0],
+			     worldtransform3DReticle_.matWorld_.m[3][1],
+			     worldtransform3DReticle_.matWorld_.m[3][2]},
+			    GetWorldPosition());
+			velocity = Multiply(kBulletSpeed, Normalise(velocity));
 
-		// 弾を登録する
-		bullets_.push_back(newBullet);
+			// 弾を生成し初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+			// 弾を登録する
+			bullets_.push_back(newBullet);
+			fireTimer = 30;
+		}
+
+		XINPUT_STATE joystate;
+		if (!Input::GetInstance()->GetJoystickState(0, joystate))
+		{
+			return;
+		}
+
+		if (joystate.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) 
+		{
+			const float kBulletSpeed = 1.0f;
+			Vector3 velocity(0, 0, kBulletSpeed);
+
+			// 速度ベクトルを自機に合わせて回転させる
+			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+			velocity = Subtract(
+			    {worldtransform3DReticle_.matWorld_.m[3][0],
+			     worldtransform3DReticle_.matWorld_.m[3][1],
+			     worldtransform3DReticle_.matWorld_.m[3][2]},
+			    GetWorldPosition());
+			velocity = Multiply(kBulletSpeed, Normalise(velocity));
+
+			// 弾を生成し初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+			// 弾を登録する
+			bullets_.push_back(newBullet);
+			fireTimer = 30;
+		}
 	}
 }
 
@@ -202,4 +248,80 @@ Vector3 Player::GetWorldPosition()
 void Player::Setparent(const WorldTransform* parent)
 { 
 	worldTransform_.parent_ = parent; 
+}
+
+void Player::SetReticle(const ViewProjection viewProjection) 
+{
+	const float kDistancePlayerTo3DReticle = 50.0f;
+	Vector3 offset = {0, 0, 1.0f};
+
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
+	offset = Multiply(kDistancePlayerTo3DReticle, Normalise(offset));
+
+	worldtransform3DReticle_.translation_ = Add(GetWorldPosition(), offset);
+	worldtransform3DReticle_.UpdateMatrix();
+
+	Vector3 positionReticle = {
+	    worldtransform3DReticle_.matWorld_.m[3][0], worldtransform3DReticle_.matWorld_.m[3][1],
+	    worldtransform3DReticle_.matWorld_.m[3][2]};
+
+	Matrix4x4 matViewport =
+	    MakeViewportMatrix(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight, 0.0f, 1.0f);
+
+	Matrix4x4 matViewProjectionViewport =
+	    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
+	positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	 sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+
+	// マウスの場合
+	 POINT mousePosition;
+
+	// マウス座標（スクリーン座標）を取得する
+	 GetCursorPos(&mousePosition);
+
+	// クライアントエリア座標に変換する
+	 HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	 ScreenToClient(hwnd, &mousePosition);
+	 sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});
+
+	// キーボードの場合
+	XINPUT_STATE joystate;
+	Vector2 spritePostition = sprite2DReticle_->GetPosition();
+	if (Input::GetInstance()->GetJoystickState(0, joystate)) 
+	{
+		spritePostition.x += (float)joystate.Gamepad.sThumbRX / SHRT_MAX * 5.0f;
+		spritePostition.y -= (float)joystate.Gamepad.sThumbRY / SHRT_MAX * 5.0f;
+		// スプライトの座標変更を反映
+		sprite2DReticle_->SetPosition(spritePostition);
+	}
+
+	Matrix4x4 matVPV = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
+
+	Matrix4x4 matInverseVPV = Inverse(matVPV);
+
+	Vector3 posNear = {(float)sprite2DReticle_->GetPosition().x, (float)sprite2DReticle_->GetPosition().y, 0};
+
+	Vector3 posFar = {(float)sprite2DReticle_->GetPosition().x, (float)sprite2DReticle_->GetPosition().y, 1};
+	
+	posNear = Transform(posNear, matInverseVPV);
+	
+	posFar = Transform(posFar, matInverseVPV);
+	
+	Vector3 mouseDirection = Subtract(posFar, posNear);
+	
+	mouseDirection = Normalise(mouseDirection);
+	
+	const float kDistancetestObject = 100.0f;
+	
+	worldtransform3DReticle_.translation_ = Add(posNear, Multiply(kDistancetestObject, mouseDirection));
+	
+	worldtransform3DReticle_.UpdateMatrix();
+	
+	ImGui::Begin("Player");
+	ImGui::Text("Near:(%+.2f,%+.2f,%.2f)", posNear.x, posNear.y, posNear.z);
+	ImGui::Text("Far:(%+.2f,%+.2f,%.2f)", posFar.x, posFar.y, posFar.z);
+	ImGui::Text(
+	    "3DRetixle:(%+.2f,%+.2f,%.2f)", worldtransform3DReticle_.translation_.x,
+	    worldtransform3DReticle_.translation_.y, worldtransform3DReticle_.translation_.z);
+	ImGui::End();
 }

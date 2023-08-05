@@ -1,7 +1,7 @@
 #pragma once
 #include "Matrix4x4.h"
 #include "Vector3.h"
-#include <math.h>
+#include <cmath>
 #include "Matrix.h"
 
 Vector3 Add(Vector3 a, Vector3 b);

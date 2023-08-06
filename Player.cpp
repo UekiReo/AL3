@@ -193,6 +193,7 @@ void Player::Attack()
 			const float kBulletSpeed = 1.0f;
 			Vector3 velocity(0, 0, kBulletSpeed);
 
+			// 速度ベクトルを自機に合わせて回転させる
 			velocity = Subtract(
 			    {worldtransform3DReticle_.matWorld_.m[3][0],
 			     worldtransform3DReticle_.matWorld_.m[3][1],

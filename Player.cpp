@@ -166,8 +166,6 @@ void Player::Attack()
 			Vector3 velocity(0, 0, kBulletSpeed);
 
 			// 速度ベクトルを自機に合わせて回転させる
-			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
 			velocity = Subtract(
 			    {worldtransform3DReticle_.matWorld_.m[3][0],
 			     worldtransform3DReticle_.matWorld_.m[3][1],
@@ -194,9 +192,6 @@ void Player::Attack()
 		{
 			const float kBulletSpeed = 1.0f;
 			Vector3 velocity(0, 0, kBulletSpeed);
-
-			// 速度ベクトルを自機に合わせて回転させる
-			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
 			velocity = Subtract(
 			    {worldtransform3DReticle_.matWorld_.m[3][0],
@@ -284,8 +279,9 @@ void Player::SetReticle(const ViewProjection viewProjection)
 	 ScreenToClient(hwnd, &mousePosition);
 	 sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});*/
 
-	// キーボードの場合
+	// コントローラーの場合
 	XINPUT_STATE joystate;
+
 	Vector2 spritePostition = sprite2DReticle_->GetPosition();
 	if (Input::GetInstance()->GetJoystickState(0, joystate)) 
 	{
@@ -320,8 +316,6 @@ void Player::SetReticle(const ViewProjection viewProjection)
 	ImGui::Begin("Player");
 	ImGui::Text("Near:(%+.2f,%+.2f,%.2f)", posNear.x, posNear.y, posNear.z);
 	ImGui::Text("Far:(%+.2f,%+.2f,%.2f)", posFar.x, posFar.y, posFar.z);
-	ImGui::Text(
-	    "3DRetixle:(%+.2f,%+.2f,%.2f)", worldtransform3DReticle_.translation_.x,
-	    worldtransform3DReticle_.translation_.y, worldtransform3DReticle_.translation_.z);
+	ImGui::Text("3DRetixle:(%+.2f,%+.2f,%.2f)", worldtransform3DReticle_.translation_.x, worldtransform3DReticle_.translation_.y, worldtransform3DReticle_.translation_.z);
 	ImGui::End();
 }

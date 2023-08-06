@@ -251,7 +251,8 @@ void GameScene::UpdateEnemyPopCommands() {
 			continue;
 		}
 
-		if (word.find("POP") == 0) {
+		if (word.find("POP") == 0) 
+		{
 			getline(line_stream, word, ',');
 			float x = (float)std::atof(word.c_str());
 
@@ -262,7 +263,8 @@ void GameScene::UpdateEnemyPopCommands() {
 			float z = (float)std::atof(word.c_str());
 			SpawnEnemy({x, y, z}, {0.0f, 0.0f, -0.5f});
 
-		} else if (word.find("WAIT") == 0) {
+		} else if (word.find("WAIT") == 0)
+		{
 			getline(line_stream, word, ',');
 
 			int32_t waitTime = atoi(word.c_str());

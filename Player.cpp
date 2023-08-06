@@ -271,18 +271,18 @@ void Player::SetReticle(const ViewProjection viewProjection)
 	Matrix4x4 matViewProjectionViewport =
 	    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
 	positionReticle = Transform(positionReticle, matViewProjectionViewport);
-	 sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+	/* sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));*/
 
 	// マウスの場合
-	 POINT mousePosition;
+	/* POINT mousePosition;*/
 
 	// マウス座標（スクリーン座標）を取得する
-	 GetCursorPos(&mousePosition);
+	/* GetCursorPos(&mousePosition);*/
 
 	// クライアントエリア座標に変換する
-	 HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	/* HWND hwnd = WinApp::GetInstance()->GetHwnd();
 	 ScreenToClient(hwnd, &mousePosition);
-	 sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});
+	 sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});*/
 
 	// キーボードの場合
 	XINPUT_STATE joystate;

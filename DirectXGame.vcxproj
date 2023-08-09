@@ -146,6 +146,7 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="CMath.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="CollisionConfig.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="EnemyState.h" />

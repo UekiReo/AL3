@@ -5,6 +5,7 @@
 #include "PlayerBullet.h"
 #include <list>
 #include "Collider.h"
+#include "CollisionConfig.h"
 
 class Player: public Collider
 {
@@ -23,10 +24,10 @@ public:
 
 	void Attack();
 
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 

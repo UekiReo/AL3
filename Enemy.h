@@ -7,6 +7,7 @@
 #include "WorldTransform.h"
 #include "TimedCall.h"
 #include "Collider.h"
+#include "CollisionConfig.h"
 
 class Player;
 
@@ -36,10 +37,10 @@ public:
 
 	void SetPlayer(Player* player) { player_ = player; }
 
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 

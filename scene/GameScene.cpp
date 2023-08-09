@@ -137,43 +137,44 @@ void GameScene::Draw()
 
 void GameScene::CheckAllCollisions() 
 {
-	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+	std::list<Collider*> colliders_;
 
-#pragma region 自キャラと敵弾
+	colliders_.push_back(player_);
+	colliders_.push_back(enemy_);
 
-	for (EnemyBullet* bullet : enemyBullets)
+	for (PlayerBullet* pBullet : player_->GetBullets()) 
 	{
-		CheckCollisionPair(bullet, player_);
+		colliders_.push_back(pBullet);
 	}
 
-#pragma endregion
-
-#pragma region 自弾と敵キャラ
-
-	for (PlayerBullet* bullet : playerBullets)
+	for (EnemyBullet* eBullet : enemy_->GetBullets()) 
 	{
-		CheckCollisionPair(bullet, enemy_);
+		colliders_.push_back(eBullet);
 	}
 
-#pragma endregion
+	std::list<Collider*>::iterator itrA = colliders_.begin();
 
-#pragma region 自弾と敵弾
-
-	for (EnemyBullet* eBullet : enemyBullets) {
-		for (PlayerBullet* pbullet : playerBullets)
+	for (; itrA != colliders_.end(); ++itrA)
+	{
+		std::list<Collider*>::iterator itrB = itrA;
+		++itrB;
+		for (; itrB != colliders_.end(); ++itrB) 
 		{
-			CheckCollisionPair(eBullet, pbullet);
+			CheckCollisionPair(*(itrA), *(itrB));
 		}
 	}
-
-	#pragma endregion
 }
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
+	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) ||
+	    !(colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask())) 
+	{
+		return;
+	}
 	Vector3 posA = colliderA->GetWorldPosition();
 	Vector3 posB = colliderB->GetWorldPosition();
+
 	float radA = colliderA->Getradius();
 	float radB = colliderB->Getradius();
 
@@ -181,7 +182,7 @@ void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 	    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
 	    (posB.z - posA.z) * (posB.z - posA.z)};
 
-	if (Distance.x + Distance.y + Distance.z <= (radA + radB) * (radA + radB)) 
+	if (Distance.x + Distance.y + Distance.z <= (radA + radB) * (radA + radB))
 	{
 		colliderA->OnCollision();
 		colliderB->OnCollision();

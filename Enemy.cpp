@@ -28,7 +28,7 @@ void Enemy::Initialize(Model* model)
 	textureHandle_ = TextureManager::Load("black.png");
 
 	// フェーズ開始
-	 phase_ = new EnemyApproach;
+	/* phase_ = new EnemyApproach;*/
 
 	worldTransform_.Initialize();
 
@@ -51,7 +51,7 @@ void Enemy::Update()
 		return false;
 	});
 
-	 phase_->Update(this);
+	/* phase_->Update(this);*/
 
 	// タイマー
 	timedCalls_.remove_if([](TimedCall* timedcall)

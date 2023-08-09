@@ -11,6 +11,8 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "CollisionManager.h"
+#include "CollisionConfig.h"
 
 /// <summary>
 /// ゲームシーン
@@ -43,13 +45,6 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-	/// <summary>
-	/// 衝突判定と応答
-	/// </summary>
-	void CheckAllCollisions();
-
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
-
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -70,6 +65,8 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 
 	Enemy* enemy_ = nullptr;
+
+	CollisionManager* collisionManager_;
 
 	/// <summary>
 	/// ゲームシーン用

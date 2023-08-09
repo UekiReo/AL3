@@ -11,6 +11,7 @@ GameScene::~GameScene()
 	delete player_;
 	delete debugCamera_;
 	delete enemy_;
+	delete collisionManager_;
 }
 
 void GameScene::Initialize()
@@ -47,6 +48,9 @@ void GameScene::Initialize()
 	// 敵キャラの初期化
 	Vector3 position = {0, 0, 20};
 	enemy_->Initialize(model_);
+
+	// コリジョンマネージャー
+	collisionManager_ = new CollisionManager();
 }
 
 void GameScene::Update() 
@@ -57,7 +61,19 @@ void GameScene::Update()
 	// 敵キャラの更新
 	enemy_->Update();
 
-	CheckAllCollisions();
+	collisionManager_->ClearColliders();
+	collisionManager_->AddCollider(player_);
+	collisionManager_->AddCollider(enemy_);
+
+	for (PlayerBullet* pBullet : player_->GetBullets()) {
+		collisionManager_->AddCollider(pBullet);
+	}
+
+	for (EnemyBullet* eBullet : enemy_->GetBullets()) {
+		collisionManager_->AddCollider(eBullet);
+	}
+
+	collisionManager_->CheckAllCollision();
 
 	debugCamera_->Update();
 
@@ -135,56 +151,3 @@ void GameScene::Draw()
 #pragma endregion
 }
 
-void GameScene::CheckAllCollisions() 
-{
-	std::list<Collider*> colliders_;
-
-	colliders_.push_back(player_);
-	colliders_.push_back(enemy_);
-
-	for (PlayerBullet* pBullet : player_->GetBullets()) 
-	{
-		colliders_.push_back(pBullet);
-	}
-
-	for (EnemyBullet* eBullet : enemy_->GetBullets()) 
-	{
-		colliders_.push_back(eBullet);
-	}
-
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-
-	for (; itrA != colliders_.end(); ++itrA)
-	{
-		std::list<Collider*>::iterator itrB = itrA;
-		++itrB;
-		for (; itrB != colliders_.end(); ++itrB) 
-		{
-			CheckCollisionPair(*(itrA), *(itrB));
-		}
-	}
-}
-
-void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
-{
-	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) ||
-	    !(colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask())) 
-	{
-		return;
-	}
-	Vector3 posA = colliderA->GetWorldPosition();
-	Vector3 posB = colliderB->GetWorldPosition();
-
-	float radA = colliderA->Getradius();
-	float radB = colliderB->Getradius();
-
-	Vector3 Distance = {
-	    (posB.x - posA.x) * (posB.x - posA.x), (posB.y - posA.y) * (posB.y - posA.y),
-	    (posB.z - posA.z) * (posB.z - posA.z)};
-
-	if (Distance.x + Distance.y + Distance.z <= (radA + radB) * (radA + radB))
-	{
-		colliderA->OnCollision();
-		colliderB->OnCollision();
-	}
-}

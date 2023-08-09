@@ -20,6 +20,7 @@ Matrix4x4 MakeRotateXMatrix(float theta) {
 	result.m[3][3] = 1;
 	return result;
 }
+
 Matrix4x4 MakeRotateYMatrix(float theta) {
 	Matrix4x4 result;
 	result.m[0][0] = cosf(theta);
@@ -40,6 +41,7 @@ Matrix4x4 MakeRotateYMatrix(float theta) {
 	result.m[3][3] = 1;
 	return result;
 }
+
 Matrix4x4 MakeRotateZMatrix(float theta) {
 	Matrix4x4 result;
 	result.m[0][0] = cosf(theta);

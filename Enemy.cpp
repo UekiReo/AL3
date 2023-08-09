@@ -4,8 +4,9 @@
 
 Enemy::Enemy() {}
 
-Enemy::~Enemy() 
-{
+Enemy::~Enemy() {
+	// delete phase_;
+
 	for (EnemyBullet* bullet : bullets_) 
 	{
 		delete bullet;
@@ -17,7 +18,7 @@ Enemy::~Enemy()
 	}
 }
 
-void Enemy::Initialize(Model* model) 
+void Enemy::Initialize(Model* model)
 {
 	assert(model);
 
@@ -25,6 +26,9 @@ void Enemy::Initialize(Model* model)
 
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("black.png");
+
+	// フェーズ開始
+	/* phase_ = new EnemyApproach();*/
 
 	worldTransform_.Initialize();
 
@@ -38,17 +42,18 @@ void Enemy::Update()
 {
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](EnemyBullet* bullet) 
-	{
-		if (bullet->IsDead()) 
 		{
+		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
 		}
 		return false;
 	});
 
+	/* phase_->Update(this);*/
+
 	// タイマー
-	timedCalls_.remove_if([](TimedCall* timedcall) 
+	timedCalls_.remove_if([](TimedCall* timedcall)
 	{
 		if (timedcall->IsFinish()) 
 		{
@@ -58,7 +63,7 @@ void Enemy::Update()
 		return false;
 	});
 
-	for (TimedCall* timedCall : timedCalls_)
+	for (TimedCall* timedCall : timedCalls_) 
 	{
 		timedCall->Update();
 	}
@@ -66,14 +71,14 @@ void Enemy::Update()
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
 
-	// 弾の更新
+	// 弾更新
 	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Update();
 	}
 }
 
-void Enemy::ChangePhase(EnemyState* newState) 
+void Enemy::ChangePhase(EnemyState* newState)
 {
 	delete phase_;
 	phase_ = newState;
@@ -102,13 +107,13 @@ void Enemy::Fire()
 	bullets_.push_back(newBullet);
 }
 
-void Enemy::Draw(const ViewProjection& viewProjection) 
+void Enemy::Draw(const ViewProjection& viewProjection)
 {
 	// モデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	// 弾の描画
-	for (EnemyBullet* bullet : bullets_)
+	// 弾描画
+	for (EnemyBullet* bullet : bullets_) 
 	{
 		bullet->Draw(viewProjection);
 	}

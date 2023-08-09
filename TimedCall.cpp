@@ -12,7 +12,9 @@ void TimedCall::Update()
 	{
 		return;
 	}
+
 	time_--;
+
 	if (time_ <= 0) 
 	{
 		isFinish = true;

@@ -52,17 +52,23 @@
     <Filter Include="ソース ファイル\2d">
       <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\player">
-      <UniqueIdentifier>{38bb01cd-d701-437a-8b21-cc97f81fae89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\enemy">
-      <UniqueIdentifier>{603ded19-7130-4362-aec4-55fe9703af41}</UniqueIdentifier>
+      <UniqueIdentifier>{dcf5ea40-d36a-4625-badb-a0b6fbe9fd21}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\player">
-      <UniqueIdentifier>{d7096767-dfaa-4999-b82e-8baaeb730625}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\player">
+      <UniqueIdentifier>{0beed837-e905-437f-96fc-7401c9e9b8a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\enemy">
-      <UniqueIdentifier>{572b8fc3-c10d-4d11-b73a-91e0f7946833}</UniqueIdentifier>
+      <UniqueIdentifier>{557a8e65-9eef-47d1-9084-36d173b81695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\player">
+      <UniqueIdentifier>{92cc3db2-f363-4225-8616-9d919b43ce3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\utilities">
+      <UniqueIdentifier>{07b4fa05-5c0c-4c0e-9860-5c694d1d7fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\utilities">
+      <UniqueIdentifier>{c83ad49d-5a9d-467b-ad63-337b8815e443}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,23 +87,8 @@
     <ClCompile Include="2d\ImGuiManager.cpp">
       <Filter>ソース ファイル\2d</Filter>
     </ClCompile>
-    <ClCompile Include="TimedCall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="CMath.cpp">
       <Filter>ソース ファイル\math</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>ソース ファイル\math</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldTransformEx.cpp">
-      <Filter>ソース ファイル\math</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル\player</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBullet.cpp">
-      <Filter>ソース ファイル\player</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>ソース ファイル\enemy</Filter>
@@ -107,6 +98,21 @@
     </ClCompile>
     <ClCompile Include="EnemyState.cpp">
       <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>ソース ファイル\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>ソース ファイル\player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBullet.cpp">
+      <Filter>ソース ファイル\player</Filter>
+    </ClCompile>
+    <ClCompile Include="TimedCall.cpp">
+      <Filter>ソース ファイル\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransformEx.cpp">
+      <Filter>ソース ファイル\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,13 +200,7 @@
     <ClInclude Include="2d\ImGuiManager.h">
       <Filter>ヘッダー ファイル\2d</Filter>
     </ClInclude>
-    <ClInclude Include="TimedCall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="CMath.h">
-      <Filter>ヘッダー ファイル\math</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
       <Filter>ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
@@ -212,11 +212,20 @@
     <ClInclude Include="EnemyState.h">
       <Filter>ヘッダー ファイル\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>ヘッダー ファイル\player</Filter>
     </ClInclude>
     <ClInclude Include="PlayerBullet.h">
       <Filter>ヘッダー ファイル\player</Filter>
+    </ClInclude>
+    <ClInclude Include="TimedCall.h">
+      <Filter>ヘッダー ファイル\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>ヘッダー ファイル\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

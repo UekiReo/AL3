@@ -6,12 +6,13 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "TimedCall.h"
+#include "Collider.h"
 
 class Player;
 
 class EnemyState;
 
-class Enemy {
+class Enemy : public Collider {
 public:
 	Enemy();
 

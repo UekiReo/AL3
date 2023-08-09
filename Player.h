@@ -4,8 +4,9 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "Collider.h"
 
-class Player 
+class Player: public Collider
 {
 public:
 	Player();

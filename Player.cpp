@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 #include "Matrix.h"
+#include "CMath.h"
 #include "ImGuiManager.h"
 #include <cassert>
 

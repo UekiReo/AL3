@@ -50,6 +50,7 @@ private: // メンバ変数
 
 	uint32_t textureHandle_ = 0;
 
+	// モデルデータ
 	std::unique_ptr<Model> model_;
 
 	WorldTransform worldTransform_;

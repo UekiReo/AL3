@@ -10,6 +10,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Player.h"
+#include "Skydome.h"
 #include <memory>
 
 /// <summary>

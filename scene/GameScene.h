@@ -9,6 +9,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "Player.h"
+#include <memory>
 
 /// <summary>
 /// ゲームシーン
@@ -45,6 +47,16 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+
+	uint32_t textureHandle_ = 0;
+
+	std::unique_ptr<Model> model_;
+
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
+
+	// 自キャラ
+	std::unique_ptr<Player> player_;
 
 	/// <summary>
 	/// ゲームシーン用

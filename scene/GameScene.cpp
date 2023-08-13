@@ -6,16 +6,35 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
 
-void GameScene::Initialize() {
+void GameScene::Initialize()
+{
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	textureHandle_ = TextureManager::Load("sample.png");
+
+	// 3Dモデルの生成
+	model_.reset(Model::Create());
+
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
+
+	// 自キャラの生成
+	player_ = std::make_unique<Player>();
+	// 自キャラの初期化
+	player_->Initialize(model_.get(), textureHandle_);
 }
 
-void GameScene::Update() {}
+void GameScene::Update()
+{
+	// 自キャラの更新
+	player_->Update();
+}
 
-void GameScene::Draw() {
+void GameScene::Draw()
+{
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -41,6 +60,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

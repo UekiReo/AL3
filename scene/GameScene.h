@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include "Player.h"
 #include "Skydome.h"
+#include "Ground.h"
 #include <memory>
 
 /// <summary>
@@ -50,11 +51,11 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	uint32_t textureHandle_ = 0;
-
 	// モデルデータ
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> skydomeModel_;
+	std::unique_ptr<Model> groundModel_;
+	std::unique_ptr<Model> playerModel_;
 
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
@@ -70,6 +71,9 @@ private: // メンバ変数
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
+
+	// 地面
+	std::unique_ptr<Ground> ground_;
 
 	/// <summary>
 	/// ゲームシーン用

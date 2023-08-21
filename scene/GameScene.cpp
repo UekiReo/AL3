@@ -13,11 +13,11 @@ void GameScene::Initialize()
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("sample.png");
-
 	// 3Dモデルの生成
 	model_.reset(Model::Create());
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
+	groundModel_.reset(Model::CreateFromOBJ("ground", true));
+	playerModel_.reset(Model::CreateFromOBJ("player", true));
 
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
@@ -31,12 +31,17 @@ void GameScene::Initialize()
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
-	player_->Initialize(model_.get(), textureHandle_);
+	player_->Initialize(playerModel_.get());
 
 	// 天球の生成
 	skydome_ = std::make_unique<Skydome>();
 	// 天球の初期化
 	skydome_->Initialize(skydomeModel_.get());
+
+	// 地面の生成
+	ground_ = std::make_unique<Ground>();
+	// 地面の初期化
+	ground_->Initialize(groundModel_.get());
 }
 
 void GameScene::Update()
@@ -44,7 +49,11 @@ void GameScene::Update()
 	// 自キャラの更新
 	player_->Update();
 
+	// 天球の更新
 	skydome_->Update();
+
+	// 地面の更新
+	ground_->Update();
 
 	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_RETURN))
@@ -106,6 +115,8 @@ void GameScene::Draw()
 	player_->Draw(viewProjection_);
 
 	skydome_->Draw(viewProjection_);
+
+	ground_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

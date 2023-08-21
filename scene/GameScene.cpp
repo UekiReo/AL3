@@ -17,20 +17,63 @@ void GameScene::Initialize()
 
 	// 3Dモデルの生成
 	model_.reset(Model::Create());
+	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
 
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
+
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+	// デバックカメラの生成
+	debugCamera_ = std::make_unique<DebugCamera>(1280, 720);
 
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
 	player_->Initialize(model_.get(), textureHandle_);
+
+	// 天球の生成
+	skydome_ = std::make_unique<Skydome>();
+	// 天球の初期化
+	skydome_->Initialize(skydomeModel_.get());
 }
 
 void GameScene::Update()
 {
 	// 自キャラの更新
 	player_->Update();
+
+	skydome_->Update();
+
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_RETURN))
+	{
+		if (isDebugCameraActive_ == false)
+		{
+			isDebugCameraActive_ = true;
+		} else {
+			isDebugCameraActive_ = false;
+		}
+	}
+#endif
+	// カメラの処理
+	if (isDebugCameraActive_)
+	{
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+		/*railCamera_->Update();
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;*/
+		
+		// ビュープロジェクション行列の更新と転送
+		viewProjection_.TransferMatrix();
+	}
 }
 
 void GameScene::Draw()
@@ -61,6 +104,8 @@ void GameScene::Draw()
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	player_->Draw(viewProjection_);
+
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

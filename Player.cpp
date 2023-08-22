@@ -111,32 +111,6 @@ void Player::Update(ViewProjection viewProjection)
 	worldTransform_.UpdateMatrix();
 
 	SetReticle(viewProjection);
-
-	//// 自機から3Dレティクルへの距離
-	//const float kDistancePlayerTo3DReticle = 50.0f;
-	//// 自機から3Dレティクルのオフセット(Z+向き)
-	//Vector3 offset = {0, 0, 1.0f};
-
-	//// 自機のワールド行列の回転を反映
-	//offset = TransformNormal(offset, worldTransform_.matWorld_);
-	//// ベクトルの長さを整える
-	//offset = Multiply(kDistancePlayerTo3DReticle, Normalise(offset));
-
-	//// 3Dレティクルの座標を設定
-	//worldtransform3DReticle_.translation_ = Add(GetWorldPosition(), offset);
-	//worldtransform3DReticle_.UpdateMatrix();
-
-	//Vector3 positionReticle = {
-	//    worldtransform3DReticle_.matWorld_.m[3][0], worldtransform3DReticle_.matWorld_.m[3][1],
-	//    worldtransform3DReticle_.matWorld_.m[3][2]};
-
-	//Matrix4x4 matViewport =
-	//    MakeViewportMatrix(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight, 0.0f, 1.0f);
-
-	//Matrix4x4 matViewProjectionViewport =
-	//    Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
-	//positionReticle = Transform(positionReticle, matViewProjectionViewport);
-	//sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 }
 
 void Player::Rotate()

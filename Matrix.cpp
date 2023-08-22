@@ -1,5 +1,17 @@
 ﻿#include "Matrix.h"
 
+Vector3 Add(const Vector3& v1, const Vector3& v2) { return Vector3(); }
+
+Vector3 Subtract(const Vector3& v1, const Vector3& v2) { return Vector3(); }
+
+Vector3 Multiply(const float& v1, const Vector3& v2) { return Vector3(); }
+
+Vector3 VectorScale(const Vector3& v1, const float& v2) { return Vector3(); }
+
+float Dot(const Vector3& v1, const Vector3& v2) { return 0.0f; }
+
+float Length(const Vector3& v) { return 0.0f; }
+
 // 足し算
 Vector3 VectorAdd(const Vector3& translation, const Vector3& move) {
 	Vector3 result;
@@ -8,6 +20,8 @@ Vector3 VectorAdd(const Vector3& translation, const Vector3& move) {
 	result.z = translation.z + move.z;
 	return result;
 }
+
+Matrix4x4 MakeRotateMatrix(const Vector3& radian) { return Matrix4x4(); }
 
 // 1 X軸回転行列
 Matrix4x4 MakeRotateXmatrix(float radian) {
@@ -176,3 +190,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	result = Multiply(scaleMatrix, Multiply(rotateXYZMatrix, translateMatrix));
 	return result;
 }
+
+Vector3 Normalize(const Vector3& v) { return Vector3(); }
+
+Matrix4x4 Inverse(const Matrix4x4& m) { return Matrix4x4(); }

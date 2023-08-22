@@ -16,7 +16,7 @@ class EnemyApproach : public EnemyState
 public:
 	void Update(Enemy* enemy);
 
-	const Vector3 kCharacterApproachSpeed = {0.0f, 0.0f, -0.1f};
+	const Vector3 kCharacterApproachSpeed = {0.0f, 0.0f, -0.08f};
 };
 
 class EnemyLeave : public EnemyState 
